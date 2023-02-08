@@ -1,18 +1,20 @@
 #!/bin/bash
 
 # Path fixes for unexpected environments
-PATH=/bin:/usr/bin:/usr/local/bin:/usr/sbin:/opt/homebrew
+PATH=/bin:/usr/bin:/usr/local/bin:/usr/sbin:/opt/homebrew:/opt/homebrew/bin
 
 ## ###############
 ## Variables
 ## ###############
 binfolder=/usr/local/bin
-visudo_path=/private/etc/sudoers.d/battery
-configfolder=$HOME/.battery
-pidfile=$configfolder/battery.pid
-logfile=$configfolder/battery.log
+visudo_path=/private/etc/sudoers.d/venti
+configfolder=$HOME/.venti
+pidfile=$configfolder/venti.pid
+logfile=$configfolder/venti.log
+configfile=$configfolder/venti.conf
+thresholdfile=$configfolder/thresholds.conf
 maintain_percentage_tracker_file=$configfolder/maintain.percentage
-daemon_path=$HOME/Library/LaunchAgents/battery.plist
+daemon_path=$HOME/Library/LaunchAgents/venti.plist
 
 ## ###############
 ## Housekeeping
@@ -31,57 +33,60 @@ if (( logsize > max_logsize_bytes )); then
 	tail -n 100 $logfile > $logfile
 fi
 
+# Load config from file
+while read LINE; do declare "$LINE"; done < $configfile
+
 # CLI help message
 helpmessage="
-Battery CLI utility v1.0.1
+Venti CLI utility v1.0
 
 Usage:
 
-  battery status
+  venti status
     output battery SMC status, % and time remaining
 
-  battery logs LINES[integer, optional]
-    output logs of the battery CLI and GUI
-	eg: battery logs 100
+  venti logs LINES[integer, optional]
+    output logs of the venti CLI and GUI
+	eg: venti logs 100
 
-  battery maintain LEVEL[1-100,stop]
+  venti maintain LEVEL[1-100,stop]
     reboot-persistent battery level maintenance: turn off charging above, and on below a certain value
-    eg: battery maintain 80
-    eg: battery maintain stop
+    eg: venti maintain 80
+    eg: venti maintain stop
 
-  battery charging SETTING[on/off]
+  venti charging SETTING[on/off]
     manually set the battery to (not) charge
-    eg: battery charging on
+    eg: venti charging on
 
-  battery adapter SETTING[on/off]
+  venti adapter SETTING[on/off]
     manually set the adapter to (not) charge even when plugged in
-    eg: battery adapter off
+    eg: venti adapter off
 
-  battery charge LEVEL[1-100]
+  venti charge LEVEL[1-100]
     charge the battery to a certain percentage, and disable charging when that percentage is reached
-    eg: battery charge 90
+    eg: venti charge 90
 
-  battery discharge LEVEL[1-100]
+  venti discharge LEVEL[1-100]
     block power input from the adapter until battery falls to this level
-    eg: battery discharge 90
+    eg: venti discharge 90
 
-  battery visudo
+  venti visudo
     instructions on how to make which utility exempt from sudo, highly recommended
 
-  battery update
-    update the battery utility to the latest version
+  venti update
+    update the venti utility to the latest version
 
-  battery reinstall
-    reinstall the battery utility to the latest version (reruns the installation script)
+  venti reinstall
+    reinstall the venti utility to the latest version (reruns the installation script)
 
-  battery uninstall
-    enable charging, remove the smc tool, and the battery script
+  venti uninstall
+    enable charging, remove the smc tool, and the venti script
 
 "
 
 # Visudo instructions
 visudoconfig="
-# Visudo settings for the battery utility installed from https://github.com/actuallymentor/battery
+# Visudo settings for the venti utility installed from https://github.com/actuallymentor/venti
 # intended to be placed in $visudo_path on a mac
 Cmnd_Alias      BATTERYOFF = $binfolder/smc -k CH0B -w 02, $binfolder/smc -k CH0C -w 02, $binfolder/smc -k CH0B -r, $binfolder/smc -k CH0C -r
 Cmnd_Alias      BATTERYON = $binfolder/smc -k CH0B -w 00, $binfolder/smc -k CH0C -w 00
@@ -96,6 +101,8 @@ ALL ALL = NOPASSWD: DISCHARGEON
 # Get parameters
 action=$1
 setting=$2
+prevRegion="DEF"
+threshold=1200
 
 ## ###############
 ## Helpers
@@ -105,6 +112,42 @@ function log() {
 
 	echo -e "$(date +%D-%T) - $1"
 
+}
+
+function test_internet() {
+	if : >/dev/tcp/8.8.8.8/53; then
+		echo 'online'
+	else
+		echo 'offline'
+	fi
+}
+
+function get_location() {
+	if [[ "$( test_internet )" == "online" ]]; then
+		ip=`curl -s -4 ifconfig.co`
+		lat=`curl -s http://ip-api.com/json/$ip | jq '.lat'`
+		long=`curl -s http://ip-api.com/json/$ip | jq '.lon'`
+		echo "lat=$lat&lon=$long"
+	else
+		echo "lat=0&lon=0"
+	fi
+}
+
+function get_threshold() { # accepts region as necessary params
+	while read LINE; do declare "$LINE"; done < $thresholdfile
+	temp=$1
+	echo "${!temp}"
+}
+
+function get_carbon_intensity() { # accepts auth token and location as necessary params
+	if [[ "$( test_internet )" == "online1" ]]; then
+		electricity_map=`curl -s -H "auth-token: $1" "http://api.co2signal.com/v1/latest?$2"`
+		carbon = "$electricity_map | jq '.data' | jq '.carbonIntensity'"
+		region = "$electricity_map | jq -r '.countryCode'"
+		echo "$carbon $region"
+	else
+		echo "0 DEF"
+	fi	
 }
 
 # Re:discharging, we're using keys uncovered by @howie65: https://github.com/actuallymentor/battery/issues/20#issuecomment-1364540704
@@ -123,10 +166,15 @@ function disable_discharging() {
 # but @joelucid uses CH0C https://github.com/davidwernhart/AlDente/issues/52#issuecomment-1019933570
 # so I'm using both since with only CH0B I noticed sometimes during sleep it does trigger charging
 function enable_charging() {
-	log "🔌🔋 Enabling battery charging"
-	sudo smc -k CH0B -w 00
-	sudo smc -k CH0C -w 00
-	disable_discharging
+	carbon_intensity=$( get_carbon_intensity )
+	if [[ "$carbon_intensity" -lt "$threshold" ]]; then
+		log "🔌🔋 Enabling battery charging"
+		sudo smc -k CH0B -w 00
+		sudo smc -k CH0C -w 00
+		disable_discharging
+	elif [[ "$carbon_intensity" -ge "$threshold" ]]; then
+		log "Carbon intensity too high!"
+	fi
 }
 
 function disable_charging() {
@@ -168,14 +216,18 @@ function get_maintain_percentage() {
 	echo "$maintain_percentage"
 }
 
-
-
 ## ###############
 ## Actions
 ## ###############
 
 # Help message
 if [ -z "$action" ]; then
+	echo -e "$helpmessage"
+	exit 0
+fi
+
+# Help message
+if [[ "$action" == "visudo" ]]; then
 	echo -e "$helpmessage"
 	exit 0
 fi
@@ -218,15 +270,15 @@ fi
 if [[ "$action" == "uninstall" ]]; then
 
 	if [[ ! "$setting" == "silent" ]]; then
-		echo "This will enable charging, and remove the smc tool and battery script"
+		echo "This will enable charging, and remove the smc tool and venti script"
 		echo "Press any key to continue"
 		read
 	fi
     enable_charging
 	disable_discharging
-	battery remove_daemon
-    sudo rm -v "$binfolder/smc" "$binfolder/battery"
-	pkill -f "/usr/local/bin/battery.*"
+	venti remove_daemon
+    sudo rm -v "$binfolder/smc" "$binfolder/venti"
+	pkill -f "/usr/local/bin/venti.*"
     exit 0
 fi
 
@@ -236,7 +288,7 @@ if [[ "$action" == "charging" ]]; then
 	log "Setting $action to $setting"
 
 	# Disable running daemon
-	battery maintain stop
+	# venti maintain stop
 
 	# Set charging to on and off
 	if [[ "$setting" == "on" ]]; then
@@ -252,10 +304,14 @@ fi
 # Discharge on/off controller
 if [[ "$action" == "adapter" ]]; then
 
-	log "Setting $action to $setting"
+	location=$( get_location )
+	result=$( get_carbon_intensity $APITOKEN "$location" ) 
+	carbonArray=($result)
+
+	log "Setting $action to $setting."
 
 	# Disable running daemon
-	battery maintain stop
+	venti maintain stop
 
 	# Set charging to on and off
 	if [[ "$setting" == "on" ]]; then
@@ -263,6 +319,16 @@ if [[ "$action" == "adapter" ]]; then
 	elif [[ "$setting" == "off" ]]; then
 		disable_discharging
 	fi
+
+	log "${carbonArray[1]}"
+	log "${carbonArray[0]}"
+
+	if [[ "${carbonArray[1]}" != "$prevRegion" ]]; then
+		temp=$( get_threshold "${carbonArray[1]}" )
+		((threshold=$temp))
+	fi
+
+	log "$threshold"
 
 	exit 0
 
@@ -272,10 +338,10 @@ fi
 if [[ "$action" == "charge" ]]; then
 
 	# Disable running daemon
-	battery maintain stop
+	venti maintain stop
 
 	# Disable charge blocker if enabled
-	battery adapter on
+	venti adapter on
 
 	# Start charging
 	battery_percentage=$( get_battery_percentage )
@@ -340,14 +406,23 @@ if [[ "$action" == "maintain_synchronous" ]]; then
 	fi
 
 	# Before we start maintaining the battery level, first discharge to the target level
-	log "Triggering discharge to $setting before enabling charging limiter"
-	battery discharge "$setting"
-	log "Discharge pre battery-maintenance complete, continuing to battery maintenance loop"
+	# log "Triggering discharge to $setting before enabling charging limiter"
+	# venti discharge "$setting"
+	# log "Discharge pre battery-maintenance complete, continuing to battery maintenance loop"
 
 	# Start charging
 	battery_percentage=$( get_battery_percentage )
+	location=$( get_location )
+	result=$( get_carbon_intensity $APITOKEN "$location" ) 
+	carbonArray=($result)
+	if [[ "${carbonArray[1]}" != "$prevRegion" ]]; then
+		temp=$( get_threshold "${carbonArray[1]}" )
+		((threshold=$temp))
+	fi
 
-	log "Charging to and maintaining at $setting% from $battery_percentage%"
+	refresh=0
+
+	log "Charging to and maintaining at $setting% from $battery_percentage%, current carbon intensity=${carbonArray[0]}"
 
 	# Loop until battery percent is exceeded
 	while true; do
@@ -360,16 +435,38 @@ if [[ "$action" == "maintain_synchronous" ]]; then
 			log "Charge above $setting"
 			disable_charging
 
-		elif [[ "$battery_percentage" -lt "$setting" && "$is_charging" == "disabled" ]]; then
+		elif [[ "$battery_percentage" -lt "$setting" && "${carbonArray[0]}" -gt "$threshold" && "$is_charging" == "disabled" ]]; then
+		
+			log "Charge below $setting, but carbon too high!"
+			sleep 1200 		# wait 20 min before checking again
+			((refresh=10))
+			
+
+		elif [[ "$battery_percentage" -lt "$setting" && "${carbonArray[0]}" -le "$threshold" && "$is_charging" == "disabled" ]]; then
 
 			log "Charge below $setting"
 			enable_charging
 
 		fi
 
-		sleep 60
+		sleep 300
 
 		battery_percentage=$( get_battery_percentage )
+		((refresh++))
+
+		if [[ $refresh -ge 8 ]]; then
+			log "Refreshing carbon intensity and location"
+
+			location=$( get_location )
+			result=$( get_carbon_intensity $APITOKEN "$location" ) 
+			carbonArray=($result)
+			if [[ "${carbonArray[1]}" != "$prevRegion" ]]; then
+				temp=$( get_threshold "${carbonArray[1]}" )
+				((threshold=$temp))
+			fi
+
+			((refresh=0))
+		fi
 
 	done
 
@@ -390,15 +487,15 @@ if [[ "$action" == "maintain" ]]; then
 		log "Killing running maintain daemons & enabling charging as default state"
 		rm $pidfile 2> /dev/null
 		rm $maintain_percentage_tracker_file 2> /dev/null
-		battery remove_daemon
+		venti remove_daemon
 		enable_charging
-		battery status
+		venti status
 		exit 0
 	fi
 
 	# Start maintenance script
 	log "Starting battery maintenance at $setting%"
-	nohup battery maintain_synchronous $setting >> $logfile &
+	nohup venti maintain_synchronous $setting >> $logfile &
 
 	# Store pid of maintenance process and setting
 	echo $! > $pidfile
@@ -407,7 +504,7 @@ if [[ "$action" == "maintain" ]]; then
 	log "Maintaining battery at $setting%"
 
 	# Enable the daemon that continues maintaining after reboot
-	battery create_daemon
+	venti create_daemon
 
 	exit 0
 
@@ -442,10 +539,10 @@ if [[ "$action" == "create_daemon" ]]; then
 <plist version=\"1.0\">
 	<dict>
 		<key>Label</key>
-		<string>com.battery.app</string>
+		<string>com.venti.app</string>
 		<key>ProgramArguments</key>
 		<array>
-			<string>$binfolder/battery</string>
+			<string>$binfolder/venti</string>
 			<string>maintain_synchronous</string>
 			<string>recover</string>
 		</array>
@@ -479,18 +576,18 @@ if [[ "$action" == "logs" ]]; then
 
 	amount="${2:-100}"
 
-	echo -e "👾 Battery CLI logs:\n"
+	echo -e "👾 Venti CLI logs:\n"
 	tail -n $amount $logfile
 
-	echo -e "\n🖥️  Battery GUI logs:\n"
+	echo -e "\n🖥️  Venti GUI logs:\n"
 	tail -n $amount "$configfolder/gui.log"
 
 	echo -e "\n📁 Config folder details:\n"
 	ls -lah $configfolder
 
 	echo -e "\n⚙️  Battery data:\n"
-	battery status
-	battery | grep -E "v\d.*"
+	venti status
+	venti | grep -E "v\d.*"
 
 	exit 0
 

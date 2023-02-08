@@ -2,7 +2,7 @@
 
 # User welcome message
 echo -e "\n####################################################################"
-echo '# 👋 Welcome, this is the setup script for the battery CLI tool.'
+echo '# 👋 Welcome, this is the setup script for the Venti CLI tool.'
 echo -e "# Note: this script will ask for your password once or multiple times."
 echo -e "####################################################################\n\n"
 
@@ -13,13 +13,13 @@ mkdir -p $tempfolder
 
 # Set script value
 calling_user=${1:-"$USER"}
-configfolder=/Users/$calling_user/.battery
-pidfile=$configfolder/battery.pid
-logfile=$configfolder/battery.log
+configfolder=/Users/$calling_user/.venti
+pidfile=$configfolder/venti.pid
+logfile=$configfolder/venti.log
 
 
 # Ask for sudo once, in most systems this will cache the permissions for a bit
-sudo echo "🔋 Starting battery installation"
+sudo echo "🔋 Starting Venti installation"
 
 # Check if git is installed, and if not, install it
 if ! which git &> /dev/null; then
@@ -50,17 +50,18 @@ sudo mv $smcfolder/smc-command/smc $binfolder
 sudo chmod u+x $binfolder/smc
 
 # Write battery function as executable
-batteryfolder="$tempfolder/battery"
-echo "[ 6/10 ] Cloning battery repository"
-git clone --depth 1 https://github.com/actuallymentor/battery.git $batteryfolder &> /dev/null
+echo "[ 6/10 ] Cloning Venti repository"
+# batteryfolder="$tempfolder/battery"
+# git clone --depth 1 https://github.com/actuallymentor/battery.git $batteryfolder &> /dev/null
+batteryfolder="/Users/adam/Documents/battery-1.0.6"
 
-echo "[ 7/10 ] Writing script to $binfolder/battery for user $calling_user"
-sudo cp $batteryfolder/battery.sh $binfolder/battery
+echo "[ 7/10 ] Writing script to $binfolder/venti for user $calling_user"
+sudo cp $batteryfolder/venti.sh $binfolder/venti
 
 # Set permissions for battery executables
-sudo chown $calling_user $binfolder/battery
-sudo chmod 755 $binfolder/battery
-sudo chmod u+x $binfolder/battery
+sudo chown $calling_user $binfolder/venti
+sudo chmod 755 $binfolder/venti
+sudo chmod u+x $binfolder/venti
 
 # Set permissions for logfiles
 mkdir -p $configfolder
@@ -74,9 +75,9 @@ touch $pidfile
 sudo chown $calling_user $pidfile
 sudo chmod 755 $pidfile
 
-sudo chown $calling_user $binfolder/battery
+sudo chown $calling_user $binfolder/venti
 
-sudo bash $batteryfolder/battery.sh visudo
+sudo bash $batteryfolder/venti.sh visudo
 echo "[ 8/10 ] Set up visudo declarations"
 
 # Remove tempfiles
@@ -85,4 +86,4 @@ echo "[ 9/10 ] Removing temp folder $tempfolder"
 rm -rf $tempfolder
 echo "[ 10/10 ] Removed temporary build files"
 
-echo -e "\n🎉 Battery tool installed. Type \"battery help\" for instructions.\n"
+echo -e "\n🎉 Venti tool installed. Type \"venti help\" for instructions.\n"

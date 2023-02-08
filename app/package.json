@@ -1,10 +1,10 @@
 {
-  "name": "battery",
-  "version": "1.0.6",
-  "description": "A battery charge limiter for M1/2 Mac devices",
+  "name": "Venti",
+  "version": "1.0.0",
+  "description": "A carbon-aware battery charge limiter for M1/2 Mac devices",
   "main": "main.js",
   "build": {
-    "appId": "co.palokaj.battery",
+    "appId": "com.adamlechowicz.venti",
     "extraFiles": {
       "from": "./assets",
       "to": "resources",
@@ -25,21 +25,23 @@
     "start": "development=true electron .",
     "build": "rm -rf ./dist/* && electron-builder build --mac --arm64"
   },
-  "repository": "https://github.com/actuallymentor/battery",
+  "repository": "https://github.com/adamlechowicz/venti",
   "keywords": [
     "battery",
     "m1",
-    "mac"
+    "mac",
+    "carbon-aware"
   ],
-  "author": "actuallymentor",
+  "author": "adamlechowicz",
   "license": "MIT",
   "devDependencies": {
     "dotenv": "^16.0.2",
     "electron": "^20.1.4",
-    "electron-builder": "^23.3.3",
-    "electron-notarize": "^1.2.1"
+    "electron-builder": "^23.6.0",
+    "electron-notarize": "^1.2.2"
   },
   "dependencies": {
+    "electron-osx-prompt": "^1.4.1",
     "sudo-prompt": "^9.2.1"
   }
 }

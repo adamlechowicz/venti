@@ -25,14 +25,14 @@ const generate_app_menu = async () => {
         return Menu.buildFromTemplate( [
 
             {
-                label: `Enable ${ maintain_percentage }% battery limit`,
+                label: `Enable carbon-aware battery limit of ${ maintain_percentage }%`,
                 type: 'radio',
                 checked: limiter_on,
                 click: enable_limiter
             },
             {
                 sublabel: 'thing',
-                label: `Disable ${ maintain_percentage }% battery limit`,
+                label: `Disable carbon-aware battery limit of ${ maintain_percentage }%`,
                 type: 'radio',
                 checked: !limiter_on,
                 click: disable_limiter
@@ -56,21 +56,21 @@ const generate_app_menu = async () => {
                 submenu: [
                     {
                         label: `Check for updates`,
-                        click: () => shell.openExternal( `https://github.com/actuallymentor/battery/releases` )
+                        click: () => shell.openExternal( `https://github.com/adamlechowicz/venti/releases` )
                     },
                     {
                         label: `User manual`,
-                        click: () => shell.openExternal( `https://github.com/actuallymentor/battery#readme` )
+                        click: () => shell.openExternal( `https://github.com/adamlechowicz/venti#readme` )
                     },
                     {
                         type: 'normal',
                         label: 'Command-line usage',
-                        click: () => shell.openExternal( `https://github.com/actuallymentor/battery#-command-line-version` )
+                        click: () => shell.openExternal( `https://github.com/adamlechowicz/venti#-command-line-version` )
                     },
                     {
                         type: 'normal',
                         label: 'Help and feature requests',
-                        click: () => shell.openExternal( `https://github.com/actuallymentor/battery/issues` )
+                        click: () => shell.openExternal( `https://github.com/adamlechowicz/venti/issues` )
                     }
                 ]
             },
@@ -122,7 +122,7 @@ async function set_initial_interface() {
     tray = new Tray( get_inactive_logo() )
 
     // Set "loading" context
-    tray.setTitle( '  updating...' )
+    tray.setTitle( ' updating...' )
     
     log( "Tray app boot complete" )
 

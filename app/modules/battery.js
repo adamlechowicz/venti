@@ -4,7 +4,7 @@ const sudo = require( 'sudo-prompt' )
 const { log, alert, wait } = require( './helpers' )
 const { USER } = process.env
 const path_fix = 'PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/usr/sbin:/opt/homebrew:/usr/bin/'
-const battery = `${ path_fix } battery`
+const venti = `${ path_fix } venti`
 const { app } = require( 'electron' )
 const shell_options = {
     shell: '/bin/bash',
@@ -36,7 +36,7 @@ const exec_async = ( command, timeout_in_ms=2000, throw_on_timeout=false ) => Pr
 // Execute with sudo
 const exec_sudo_async = async command => new Promise( async ( resolve, reject ) => {
 
-    const options = { name: 'Battery limiting utility', ...shell_options }
+    const options = { name: 'Venti', ...shell_options }
     log( `Sudo executing command: ${ command }` )
     sudo.exec( command, options, ( error, stdout, stderr ) => {
 
@@ -56,10 +56,10 @@ const enable_battery_limiter = async () => {
     try {
         // Start battery maintainer
         const status = await get_battery_status()
-        await exec_async( `${ battery } maintain ${ status?.maintain_percentage || 80 }` )
+        await exec_async( `${ venti } maintain ${ status?.maintain_percentage || 80 }` )
         log( `enable_battery_limiter exec complete` )
     } catch( e ) {
-        log( 'Error enabling battery: ', e )
+        log( 'Error enabling venti: ', e )
         alert( e.message )
     }
 
@@ -68,9 +68,9 @@ const enable_battery_limiter = async () => {
 const disable_battery_limiter = async () => {
 
     try {
-        await exec_async( `${ battery } maintain stop` )
+        await exec_async( `${ venti } maintain stop` )
     } catch( e ) {
-        log( 'Error enabling battery: ', e )
+        log( 'Error enabling venti: ', e )
         alert( e.message )
     }
 
@@ -90,57 +90,57 @@ const update_or_install_battery = async () => {
         // Check if xcode build tools are installed
         const xcode_installed = await exec_async( `${ path_fix } which git` ).catch( () => false )
         if( !xcode_installed ) {
-            alert( `The Battery tool needs Xcode to be installed, please accept the terms and conditions for installation` )
+            alert( `Venti needs Xcode to be installed, please accept the terms and conditions for installation` )
             await exec_async( `${ path_fix } xcode-select --install` )
-            alert( `Please restart the Battery app after Xcode finished installing` )
+            alert( `Please restart Venti after Xcode finished installing` )
             app.exit()
         }
 
-        // Check if battery is installed
+        // Check if venti is installed
         const [
-            battery_installed,
+            venti_installed,
             smc_installed,
             charging_in_visudo,
             discharging_in_visudo
         ] = await Promise.all( [
-            exec_async( `${ path_fix } which battery` ).catch( () => false ),
+            exec_async( `${ path_fix } which venti` ).catch( () => false ),
             exec_async( `${ path_fix } which smc` ).catch( () => false ),
             exec_async( `${ path_fix } sudo -n /usr/local/bin/smc -k CH0C -r` ).catch( () => false ),
             exec_async( `${ path_fix } sudo -n /usr/local/bin/smc -k CH0I -r` ).catch( () => false )
         ] )
 
         const visudo_complete = charging_in_visudo && discharging_in_visudo
-        const is_installed = battery_installed && smc_installed
+        const is_installed = venti_installed && smc_installed
         log( 'Is installed? ', is_installed )
 
-        // Kill running instances of battery
-        const processes = await exec_async( `ps aux | grep "/usr/local/bin/battery " | wc -l | grep -Eo "\\d*"` )
-        log( `Found ${ `${ processes }`.replace( /\n/, '' ) } battery related processed to kill` )
-        await exec_async( `${ battery } maintain stop` )
-        await exec_async( `pkill -f "/usr/local/bin/battery.*"` ).catch( e => log( `Error killing existing battery progesses, usually means no running processes` ) )
+        // Kill running instances of venti
+        const processes = await exec_async( `ps aux | grep "/usr/local/bin/venti " | wc -l | grep -Eo "\\d*"` )
+        log( `Found ${ `${ processes }`.replace( /\n/, '' ) } venti related processed to kill` )
+        await exec_async( `${ venti } maintain stop` )
+        await exec_async( `pkill -f "/usr/local/bin/venti.*"` ).catch( e => log( `Error killing existing venti processes, usually means no running processes` ) )
 
         // If installed, update
         if( is_installed && visudo_complete ) {
-            if( !online ) return log( `Skipping battery update because we are offline` )
-            log( `Updating battery...` )
-            const result = await exec_async( `${ battery } update silent` )
+            if( !online ) return log( `Skipping venti update because we are offline` )
+            log( `Updating venti...` )
+            const result = await exec_async( `${ venti } update silent` )
             log( `Update result: `, result )
         }
 
         // If not installed, run install script
         if( !is_installed || !visudo_complete ) {
-            log( `Installing battery for ${ USER }...` )
-            if( !online ) return alert( `Battery needs an internet connection to download the latest version, please connect to the internet and open the app again.` )
-            await alert( `Welcome to the Battery limiting tool. The app needs to install/update some components, so it will ask for your password. This should only be needed once.` )
-            const result = await exec_sudo_async( `curl -s https://raw.githubusercontent.com/actuallymentor/battery/main/setup.sh | bash -s -- $USER` )
+            log( `Installing venti for ${ USER }...` )
+            if( !online ) return alert( `Venti needs an internet connection to download the latest version, please connect to the internet and open the app again.` )
+            await alert( `Welcome to Venti. The app needs to install/update some components, so it will ask for your password. This should only be needed once.` )
+            const result = await exec_sudo_async( `curl -s https://raw.githubusercontent.com/adamlechowicz/venti/main/setup.sh | bash -s -- $USER` )
             log( `Install result: `, result )
-            await alert( `Battery background components installed successfully. You can find the battery limiter icon in the top right of your menu bar.` )
+            await alert( `Venti background components installed successfully. You can find the Venti icon in the top right of your menu bar.` )
         }
 
 
     } catch( e ) {
         log( `Update/install error: `, e )
-        alert( `Error installing battery limiter: ${ e.message }` )
+        alert( `Error installing Venti: ${ e.message }` )
     }
 
 }
@@ -149,12 +149,12 @@ const update_or_install_battery = async () => {
 const is_limiter_enabled = async () => {
 
     try {
-        const message = await exec_async( `${ battery } status` )
+        const message = await exec_async( `${ venti } status` )
         log( `Limiter status message: `, message )
         return message.includes( 'being maintained at' )
     } catch( e ) {
-        log( `Error getting battery status: `, e )
-        alert( `Battery limiter error: ${ e.message }` )
+        log( `Error getting venti status: `, e )
+        alert( `Venti error: ${ e.message }` )
     }
 
 }
@@ -162,7 +162,7 @@ const is_limiter_enabled = async () => {
 const get_battery_status = async () => {
 
     try {
-        const message = await exec_async( `${ battery } status_csv` )
+        const message = await exec_async( `${ venti } status_csv` )
         let [ percentage, remaining, charging, discharging, maintain_percentage ] = message.split( ',' )
         maintain_percentage = maintain_percentage.trim()
         maintain_percentage = maintain_percentage.length ? maintain_percentage : undefined
@@ -178,8 +178,8 @@ const get_battery_status = async () => {
         return [ battery_state, daemon_state, maintain_percentage ]
 
     } catch( e ) {
-        log( `Error getting battery status: `, e )
-        alert( `Battery limiter error: ${ e.message }` )
+        log( `Error getting venti status: `, e )
+        alert( `Venti error: ${ e.message }` )
     }
 
 }

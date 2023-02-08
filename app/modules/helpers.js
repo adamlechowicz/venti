@@ -10,8 +10,8 @@ const log = async ( ...messages ) => {
     // Log to file if possible
     try {
         if( HOME ) {
-            await fs.mkdir( `${ HOME }/.battery/`, { recursive: true } )
-            await fs.appendFile( `${ HOME }/.battery/gui.log`, `${ messages.join( '\n' ) }\n`, 'utf8' )
+            await fs.mkdir( `${ HOME }/.venti/`, { recursive: true } )
+            await fs.appendFile( `${ HOME }/.venti/gui.log`, `${ messages.join( '\n' ) }\n`, 'utf8' )
         }
         else if( !has_alerted_user_no_home ) {
             alert( `No HOME variable set, this should never happen` )
