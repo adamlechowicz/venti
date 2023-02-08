@@ -1,1 +1,3 @@
 *.app
+*.psd
+.DS_Store

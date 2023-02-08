@@ -86,7 +86,7 @@ Usage:
 
 # Visudo instructions
 visudoconfig="
-# Visudo settings for the venti utility installed from https://github.com/actuallymentor/venti
+# Visudo settings for the Venti utility installed from https://github.com/adamlechowicz/venti
 # intended to be placed in $visudo_path on a mac
 Cmnd_Alias      BATTERYOFF = $binfolder/smc -k CH0B -w 02, $binfolder/smc -k CH0C -w 02, $binfolder/smc -k CH0B -r, $binfolder/smc -k CH0C -r
 Cmnd_Alias      BATTERYON = $binfolder/smc -k CH0B -w 00, $binfolder/smc -k CH0C -w 00
@@ -101,8 +101,9 @@ ALL ALL = NOPASSWD: DISCHARGEON
 # Get parameters
 action=$1
 setting=$2
-prevRegion="DEF"
+prev_region="DEF"
 threshold=1200
+refresh_interval=8
 
 ## ###############
 ## Helpers
@@ -246,23 +247,23 @@ fi
 
 # Reinstall helper
 if [[ "$action" == "reinstall" ]]; then
-	echo "This will run curl -sS https://raw.githubusercontent.com/actuallymentor/battery/main/setup.sh | bash"
+	echo "This will run curl -sS https://raw.githubusercontent.com/adamlechowicz/venti/main/setup.sh | bash"
 	if [[ ! "$setting" == "silent" ]]; then
 		echo "Press any key to continue"
 		read
 	fi
-	curl -sS https://raw.githubusercontent.com/actuallymentor/battery/main/setup.sh | bash
+	curl -sS https://raw.githubusercontent.com/adamlechowicz/venti/main/setup.sh | bash
 	exit 0
 fi
 
 # Update helper
 if [[ "$action" == "update" ]]; then
-	echo "This will run curl -sS https://raw.githubusercontent.com/actuallymentor/battery/main/update.sh | bash"
+	echo "This will run curl -sS https://raw.githubusercontent.com/adamlechowicz/venti/main/update.sh | bash"
 	if [[ ! "$setting" == "silent" ]]; then
 		echo "Press any key to continue"
 		read
 	fi
-	curl -sS https://raw.githubusercontent.com/actuallymentor/battery/main/update.sh | bash
+	curl -sS https://raw.githubusercontent.com/adamlechowicz/venti/main/update.sh | bash
 	exit 0
 fi
 
@@ -323,7 +324,7 @@ if [[ "$action" == "adapter" ]]; then
 	log "${carbonArray[1]}"
 	log "${carbonArray[0]}"
 
-	if [[ "${carbonArray[1]}" != "$prevRegion" ]]; then
+	if [[ "${carbonArray[1]}" != "$prev_region" ]]; then
 		temp=$( get_threshold "${carbonArray[1]}" )
 		((threshold=$temp))
 	fi
@@ -415,7 +416,7 @@ if [[ "$action" == "maintain_synchronous" ]]; then
 	location=$( get_location )
 	result=$( get_carbon_intensity $APITOKEN "$location" ) 
 	carbonArray=($result)
-	if [[ "${carbonArray[1]}" != "$prevRegion" ]]; then
+	if [[ "${carbonArray[1]}" != "$prev_region" ]]; then
 		temp=$( get_threshold "${carbonArray[1]}" )
 		((threshold=$temp))
 	fi
@@ -439,7 +440,7 @@ if [[ "$action" == "maintain_synchronous" ]]; then
 		
 			log "Charge below $setting, but carbon too high!"
 			sleep 1200 		# wait 20 min before checking again
-			((refresh=10))
+			((refresh=refresh_interval))
 			
 
 		elif [[ "$battery_percentage" -lt "$setting" && "${carbonArray[0]}" -le "$threshold" && "$is_charging" == "disabled" ]]; then
@@ -454,13 +455,13 @@ if [[ "$action" == "maintain_synchronous" ]]; then
 		battery_percentage=$( get_battery_percentage )
 		((refresh++))
 
-		if [[ $refresh -ge 8 ]]; then
+		if [[ $refresh -ge $refresh_interval ]]; then
 			log "Refreshing carbon intensity and location"
 
 			location=$( get_location )
 			result=$( get_carbon_intensity $APITOKEN "$location" ) 
 			carbonArray=($result)
-			if [[ "${carbonArray[1]}" != "$prevRegion" ]]; then
+			if [[ "${carbonArray[1]}" != "$prev_region" ]]; then
 				temp=$( get_threshold "${carbonArray[1]}" )
 				((threshold=$temp))
 			fi

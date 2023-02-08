@@ -51,12 +51,11 @@ sudo chmod u+x $binfolder/smc
 
 # Write battery function as executable
 echo "[ 6/10 ] Cloning Venti repository"
-# batteryfolder="$tempfolder/battery"
-# git clone --depth 1 https://github.com/actuallymentor/battery.git $batteryfolder &> /dev/null
-batteryfolder="/Users/adam/Documents/battery-1.0.6"
+ventifolder="$tempfolder/venti"
+git clone --depth 1 https://github.com/adamlechowicz/venti.git $batteryfolder &> /dev/null
 
 echo "[ 7/10 ] Writing script to $binfolder/venti for user $calling_user"
-sudo cp $batteryfolder/venti.sh $binfolder/venti
+sudo cp $ventifolder/venti.sh $binfolder/venti
 
 # Set permissions for battery executables
 sudo chown $calling_user $binfolder/venti
@@ -77,7 +76,7 @@ sudo chmod 755 $pidfile
 
 sudo chown $calling_user $binfolder/venti
 
-sudo bash $batteryfolder/venti.sh visudo
+sudo bash $ventifolder/venti.sh visudo
 echo "[ 8/10 ] Set up visudo declarations"
 
 # Remove tempfiles
