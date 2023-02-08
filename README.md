@@ -1,4 +1,4 @@
-<img width="150px" align="left" src="./app/build/icon.png"/>
+<img width="130px" align="left" src="./app/build/icon.png"/>
 
 # Venti
 ## Carbon-aware Battery Management<br> for Apple Silicon MacBooks
