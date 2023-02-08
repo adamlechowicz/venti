@@ -15,9 +15,8 @@ This is an app for Apple Silicon MacBooks. It will not work on Intel Macs becaus
 
 ### Installation
 
-- Option 1: install through Homebrew with `brew install venti`
-- Option 2: [You can download the latest app dmg version here]( https://github.com/adamlechowicz/venti/releases/ ).
-- Option 3: command-line only installation (see section below)
+- Option 1: [You can download the latest version here (notarized .dmg)]( https://github.com/adamlechowicz/venti/releases/ ).
+- Option 2: command-line only installation (see section below)
 
 The first time you open the app, it will ask for your administator password so it can install the needed components. Please note that the app:
 
