@@ -116,7 +116,7 @@ const update_or_install_battery = async () => {
         // Kill running instances of venti
         const processes = await exec_async( `ps aux | grep "/usr/local/bin/venti " | wc -l | grep -Eo "\\d*"` )
         log( `Found ${ `${ processes }`.replace( /\n/, '' ) } venti related processed to kill` )
-        await exec_async( `${ venti } maintain stop` )
+        if( is_installed ) await exec_async( `${ battery } maintain stop` )
         await exec_async( `pkill -f "/usr/local/bin/venti.*"` ).catch( e => log( `Error killing existing venti processes, usually means no running processes` ) )
 
         // If installed, update
@@ -172,7 +172,7 @@ const get_battery_status = async () => {
 
         let battery_state = `${ percentage }% (${ remaining } remaining)`
         let daemon_state = ``
-        if( discharging ) daemon_state += `forcing discharge to 80%`
+        if( discharging ) daemon_state += `forcing discharge to ${ maintain_percentage || 80 }%`
         else daemon_state += `smc charging ${ charging ? 'enabled' : 'disabled' }`
 
         return [ battery_state, daemon_state, maintain_percentage ]

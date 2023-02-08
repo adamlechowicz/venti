@@ -5,10 +5,10 @@ const { resourcesPath } = process
 
 // Logo assets
 const asset_path = app.isPackaged ? resourcesPath : './assets'
-const active_logo_light = nativeImage.createFromPath( path.join( asset_path, `/battery-Template.png` ) )
-const active_logo_dark = nativeImage.createFromPath( path.join( asset_path, `/battery-Template.png` ) )
-const inactive_logo_light = nativeImage.createFromPath( path.join( asset_path, `/battery-inactiveTemplate.png` ) )
-const inactive_logo_dark = nativeImage.createFromPath( path.join( asset_path, `/battery-inactiveTemplate.png` ) )
+const active_logo_light = nativeImage.createFromPath( path.join( asset_path, `/venti-Template.png` ) )
+const active_logo_dark = nativeImage.createFromPath( path.join( asset_path, `/venti-Template.png` ) )
+const inactive_logo_light = nativeImage.createFromPath( path.join( asset_path, `/venti-inactiveTemplate.png` ) )
+const inactive_logo_dark = nativeImage.createFromPath( path.join( asset_path, `/venti-inactiveTemplate.png` ) )
 
 /* ///////////////////////////////
 // Logo handlers

@@ -16,6 +16,8 @@ calling_user=${1:-"$USER"}
 configfolder=/Users/$calling_user/.venti
 pidfile=$configfolder/venti.pid
 logfile=$configfolder/venti.log
+thresholdfile=$configfolder/thresholds.conf
+configfile=$configfolder/venti.conf
 
 
 # Ask for sudo once, in most systems this will cache the permissions for a bit
