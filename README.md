@@ -1,4 +1,4 @@
-<img width="100px" align="left" src="./app/build/icon.png"/>
+<img width="150px" align="left" src="./app/build/icon.png"/>
 
 # Venti
 
