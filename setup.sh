@@ -19,7 +19,6 @@ logfile=$configfolder/venti.log
 thresholdfile=$configfolder/thresholds.conf
 configfile=$configfolder/venti.conf
 
-
 # Ask for sudo once, in most systems this will cache the permissions for a bit
 sudo echo "🔋 Starting Venti installation"
 
@@ -54,7 +53,7 @@ sudo chmod u+x $binfolder/smc
 # Write battery function as executable
 echo "[ 6/10 ] Cloning Venti repository"
 ventifolder="$tempfolder/venti"
-git clone --depth 1 https://github.com/adamlechowicz/venti.git $batteryfolder &> /dev/null
+git clone --depth 1 https://github.com/adamlechowicz/venti.git $ventifolder &> /dev/null
 
 echo "[ 7/10 ] Writing script to $binfolder/venti for user $calling_user"
 sudo cp $ventifolder/venti.sh $binfolder/venti

@@ -124,6 +124,8 @@ function test_internet() {
 }
 
 function get_location() {
+	if [[ "$FIXEDLOC" != "False" ]]; then
+		echo "countryCode=$FIXEDLOC"
 	if [[ "$( test_internet )" == "online" ]]; then
 		ip=`curl -s -4 ifconfig.co`
 		lat=`curl -s http://ip-api.com/json/$ip | jq '.lat'`
