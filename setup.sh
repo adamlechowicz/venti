@@ -76,6 +76,13 @@ touch $pidfile
 sudo chown $calling_user $pidfile
 sudo chmod 755 $pidfile
 
+cp $ventifolder/venti.conf $configfile
+cp $ventifolder/thresholds.conf $thresholdfile
+sudo chown $calling_user $configfile
+sudo chmod 755 $configfile
+sudo chown $calling_user $thresholdfile
+sudo chmod 755 $thresholdfile
+
 sudo chown $calling_user $binfolder/venti
 
 sudo bash $ventifolder/venti.sh visudo
