@@ -1,6 +1,7 @@
 <img width="100px" align="left" src="./app/build/icon.png"/>
 
 # Venti
+
 ## Carbon-aware Battery Management for Apple Silicon MacBooks
 
 <img width="300px" align="right" src="./screenshots/tray.png"/> Venti is meant for MacBooks which are plugged into a power source most of the time.  It fulfills two design goals simultaneously: first, it keeps the battery charged to `80%`, which helps prolong the longevity of the battery.  Second, when the battery percentage does drop below `80%`, Venti uses carbon intensity data from [CO2signal](https://www.co2signal.com) to *defer* charging until grid electricity is sufficiently clean, reducing your carbon footprint.
