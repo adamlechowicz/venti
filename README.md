@@ -1,3 +1,5 @@
+<img width="150px" align="left" src="./app/build/icon.png"/>
+
 # Venti
 ## Carbon-aware Battery Management for Apple Silicon Mac(Book)s
 
@@ -5,11 +7,11 @@
 
 Venti is free, open-source, and heavily based on the existing [battery tool](https://github.com/actuallymentor/battery/) by Mentor Palokaj.
 
-> Want to know if this tool does anything or is just a placebo? Read [this article](https://batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries). TL;DR: keep your battery cool, keep it at 80% when plugged in, and discharge it as shallowly as feasible.
+> Want to know if this tool does anything or is just a placebo? Read [this article](https://batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries). TLDR: keep your battery cool, keep it at 80% when plugged in, and discharge it as shallowly as feasible.
 
 ### Requirements
 
-This is an app for Apple Silicon MacBooks. It will not work on Intel Macs because the System Management Controller (SMC) is fundamentally different.  If you have an Intel Mac and are looking for a solution to maintain your battery, consider the free version of the [Al Dente](https://apphousekitchen.com/) app.  It is a good alternative and has a premium version with many more features.
+This is an app for Apple Silicon MacBooks. It will not work on Intel Macs because the System Management Controller (SMC) is fundamentally different.  If you have an Intel Mac and are looking for a solution to maintain your battery, consider the [AlDente](https://apphousekitchen.com/) app.  It is a good alternative and has a premium version with many more features.
 
 ### Installation
 
@@ -58,7 +60,8 @@ This will:
 Example usage:
 
 ```shell
-# This will disable charging when your battery meets or exceeds 80%, and enable it when it falls below 80%, as long as grid carbon emissions are sufficiently low
+# This will disable charging when your battery meets or exceeds 80%, 
+# and enable it when it falls below 80%, as long as carbon emissions are low
 venti maintain 80
 ```
 
