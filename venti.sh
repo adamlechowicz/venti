@@ -72,9 +72,15 @@ Usage:
 
   venti fix-region {region/False}
     manually fix the location queried for carbon intensity from Electricity Map.
-	see https://api.electricitymap.org/v3/zones for a full list of regions
-	to use dynamic location based on IP: venti fix-location False
-	to use fixed location: venti fix-location ES-CE
+    see https://api.electricitymap.org/v3/zones for a full list of regions
+    to use dynamic location based on IP: venti fix-location False
+    to use fixed location: venti fix-location ES-CE
+
+  venti set-api-key {APIKEY}
+    set your own (free!) API key, used to query for carbon intensity from CO2signal. 
+    there is a default key, but depending on how popular this tool becomes, it may hit the request limit.
+    you can get your own free key and never deal with these issues by visiting https://www.co2signal.com.
+    eg: venti set-api-key 1xYYY1xXXX1XXXxXXYyYYxXXyXyyyXXX
 
   venti visudo
     instructions on how to make which utility exempt from sudo, highly recommended
@@ -133,7 +139,6 @@ function get_location() {
 	if [[ "$FIXEDLOC" != "False" ]]; then
 		echo "countryCode=$FIXEDLOC"
 	fi
-
 	if [[ "$( test_internet )" == "online" ]]; then
 		ip=`curl -s -4 ifconfig.co`
 		lat=`curl -s http://ip-api.com/json/$ip | jq '.lat'`
@@ -146,15 +151,18 @@ function get_location() {
 
 function get_threshold() { # accepts region as necessary params
 	while read LINE; do declare "$LINE"; done < $thresholdfile
-	temp=$1
+	temp="${1//-/}"
+	temp="${1//\"/ }"
 	echo "${!temp}"
 }
 
 function get_carbon_intensity() { # accepts auth token and location as necessary params
-	if [[ "$( test_internet )" == "online1" ]]; then
+	if [[ "$( test_internet )" == "online" ]]; then
 		electricity_map=`curl -s -H "auth-token: $1" "http://api.co2signal.com/v1/latest?$2"`
-		carbon = "$electricity_map | jq '.data' | jq '.carbonIntensity'"
-		region = "$electricity_map | jq -r '.countryCode'"
+		carbon=`echo "$electricity_map" | grep -o ',"carbonIntensity":[^,]*' | grep -o '[^:]*$'`
+		result=`echo "$electricity_map" | grep -o ',"countryCode":[^,]*' | grep -o '[^:]*$'`
+		region="${result//-/}"
+		region="${region//\"/}"
 		echo "$carbon $region"
 	else
 		echo "0 DEF"
@@ -255,6 +263,16 @@ if [[ "$action" == "visudo" ]]; then
 	exit 0
 fi
 
+if [[ "$action" == "fix-region" ]]; then
+	sed -i '' "s/\(FIXEDLOC *= *\).*/\1$setting/" $configfile
+	exit 0
+fi
+
+if [[ "$action" == "set-api-key" ]]; then
+	sed -i '' "s/\(APITOKEN *= *\).*/\1$setting/" $configfile
+	exit 0
+fi
+
 # Reinstall helper
 if [[ "$action" == "reinstall" ]]; then
 	echo "This will run curl -sS https://raw.githubusercontent.com/adamlechowicz/venti/main/setup.sh | bash"
@@ -299,7 +317,7 @@ if [[ "$action" == "charging" ]]; then
 	log "Setting $action to $setting"
 
 	# Disable running daemon
-	# venti maintain stop
+	venti maintain stop
 
 	# Set charging to on and off
 	if [[ "$setting" == "on" ]]; then
@@ -315,10 +333,6 @@ fi
 # Discharge on/off controller
 if [[ "$action" == "adapter" ]]; then
 
-	location=$( get_location )
-	result=$( get_carbon_intensity $APITOKEN "$location" ) 
-	carbonArray=($result)
-
 	log "Setting $action to $setting."
 
 	# Disable running daemon
@@ -330,16 +344,6 @@ if [[ "$action" == "adapter" ]]; then
 	elif [[ "$setting" == "off" ]]; then
 		disable_discharging
 	fi
-
-	log "${carbonArray[1]}"
-	log "${carbonArray[0]}"
-
-	if [[ "${carbonArray[1]}" != "$prev_region" ]]; then
-		temp=$( get_threshold "${carbonArray[1]}" )
-		((threshold=$temp))
-	fi
-
-	log "$threshold"
 
 	exit 0
 
