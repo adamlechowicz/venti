@@ -1,29 +1,32 @@
-# Battery charge limiter for M1 Mac devices
+# Venti
+## Carbon-aware Battery Management for Apple Silicon Mac(Book)s
 
-<img width="300px" align="right" src="./screenshots/tray.png"/>This tool makes it possible to keep a chronically plugged in M1 Macbook at `80%` battery, since that will prolong the longevity of the battery. It is free and open-source and will remain that way.
+<img width="300px" align="right" src="./screenshots/tray.png"/> Venti is meant for MacBooks which are plugged into a power source most of the time.  It fulfills two design goals simultaneously: first, it keeps the battery charged to `80%`, which helps prolong the longevity of the battery.  Second, when the battery percentage does drop below `80%`, Venti uses carbon intensity data from [CO2signal](https://www.co2signal.com) to *defer* charging until grid electricity is sufficiently clean, reducing your carbon footprint.
 
-> Want to know if this tool does anything or is just a placebo? Read [this excellent article](https://batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries). TL;DR: keep your battery cool, keep it at 80% when plugged in, and discharge it as shallowly as feasible.
+Venti is free, open-source, and heavily based on the existing [battery tool](https://github.com/actuallymentor/battery/) by Mentor Palokaj.
+
+> Want to know if this tool does anything or is just a placebo? Read [this article](https://batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries). TL;DR: keep your battery cool, keep it at 80% when plugged in, and discharge it as shallowly as feasible.
 
 ### Requirements
 
-This is an app for M1 Macs. It will not work on non-M1 macs. Do you have an older Mac? Consider the free version of the [Al Dente](https://apphousekitchen.com/) software package. It is a good alternative and has a premium version with many more features.
+This is an app for Apple Silicon MacBooks. It will not work on Intel Macs because the System Management Controller (SMC) is fundamentally different.  If you have an Intel Mac and are looking for a solution to maintain your battery, consider the free version of the [Al Dente](https://apphousekitchen.com/) app.  It is a good alternative and has a premium version with many more features.
 
 ### Installation
 
-- Option 1: install through brew with `brew install battery`
-- Option 2: [You can download the latest app dmg version here]( https://github.com/actuallymentor/battery/releases/ ).
+- Option 1: install through Homebrew with `brew install venti`
+- Option 2: [You can download the latest app dmg version here]( https://github.com/adamlechowicz/venti/releases/ ).
 - Option 3: command-line only installation (see section below)
 
 The first time you open the app, it will ask for your administator password so it can install the needed components. Please note that the app:
 
-- Discharges your battery until it reaches 80%, **even when plugged in**
 - Disables charging when your battery is above 80% charged
-- Enabled charging when your battery is under 80% charged
+- Enables charging when your battery is under 80% charged and grid carbon emissions are low
+- While your device is plugged into a power source, the battery will not discharge (by default)
 - Keeps the limit engaged even after rebooting
 - Keeps the limit engaged even after closing the tray app
-- Also automatically installs the `battery` command line tool. If you want a custom charging percentage, the CLI is the only way to do that.
+- Also automatically installs the `venti` command line tool. If you want a custom charging percentage, the CLI is the only way to do that.
 
-Do you have questions, comments, or feature requests? [Open an issue here](https://github.com/actuallymentor/battery/issues) or [Tweet at me](https://twitter.com/actuallymentor).
+Do you have questions, comments, or feature requests? [Open an issue here](https://github.com/adamlechowicz/venti/issues) or [Email me](mailto:alechowicz@umass.edu).
 
 ---
 
@@ -34,41 +37,41 @@ Do you have questions, comments, or feature requests? [Open an issue here](https
 
 The GUI app uses a command line tool under the hood. Installing the GUI automatically installs the CLI as well. You can also separately install the CLI.
 
-The CLI is used for managing the battery charging status for M1 Macs. Can be used to enable/disable the Macbook from charging the battery when plugged into power.
+The CLI is used for managing the battery charging status for M1 Macs. Can be used to enable/disable the MacBook from charging the battery when plugged into power.
 
 ### Installation
 
 One-line installation:
 
 ```bash
-curl -s https://raw.githubusercontent.com/actuallymentor/battery/main/setup.sh | bash
+curl -s https://raw.githubusercontent.com/adamlechowicz/venti/main/setup.sh | bash
 ```
 
 This will:
 
 1. Compile the `smc` tool from the [hholtmann/smcFanControl]( https://github.com/hholtmann/smcFanControl.git ) repository
 2. Install `smc` to `/usr/local/bin`
-3. Install `battery` to `/usr/local/bin`
+3. Install `venti` to `/usr/local/bin`
 
 ### Usage
 
 Example usage:
 
 ```shell
-# This will enable charging when your battery dips under 80, and disable it when it exceeds 80
-battery maintain 80
+# This will disable charging when your battery meets or exceeds 80%, and enable it when it falls below 80%, as long as grid carbon emissions are sufficiently low
+venti maintain 80
 ```
 
-After running a command like `battery charging off` you can verify the change visually by looking at the battery icon:
+After running a command like `venti charging off` you can verify the change visually by looking at the battery icon:
 
 ![Battery not charging](./screenshots/not-charging-screenshot.png)
 
-After running `battery charging on` you will see it change to this:
+After running `venti charging on` you will see it change to this:
 
 ![Battery charging](./screenshots/charging-screenshot.png)
 
 
-For help, run `battery` without parameters:
+For help, run `venti help` or `venti` without parameters:
 
 ```
 Battery CLI utility v1.0.1
