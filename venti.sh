@@ -70,6 +70,12 @@ Usage:
     block power input from the adapter until battery falls to this level
     eg: venti discharge 90
 
+  venti fix-region {region/False}
+    manually fix the location queried for carbon intensity from Electricity Map.
+	see https://api.electricitymap.org/v3/zones for a full list of regions
+	to use dynamic location based on IP: venti fix-location False
+	to use fixed location: venti fix-location ES-CE
+
   venti visudo
     instructions on how to make which utility exempt from sudo, highly recommended
 
@@ -126,6 +132,8 @@ function test_internet() {
 function get_location() {
 	if [[ "$FIXEDLOC" != "False" ]]; then
 		echo "countryCode=$FIXEDLOC"
+	fi
+
 	if [[ "$( test_internet )" == "online" ]]; then
 		ip=`curl -s -4 ifconfig.co`
 		lat=`curl -s http://ip-api.com/json/$ip | jq '.lat'`
@@ -230,7 +238,7 @@ if [ -z "$action" ]; then
 fi
 
 # Help message
-if [[ "$action" == "visudo" ]]; then
+if [[ "$action" == "help" ]]; then
 	echo -e "$helpmessage"
 	exit 0
 fi

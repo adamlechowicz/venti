@@ -4,7 +4,7 @@ const sudo = require( 'sudo-prompt' )
 const { log, alert, wait } = require( './helpers' )
 const { USER } = process.env
 const path_fix = 'PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/usr/sbin:/opt/homebrew:/usr/bin/'
-const venti = `${ path_fix }venti`
+const venti = `${ path_fix } venti`
 const { app } = require( 'electron' )
 const shell_options = {
     shell: '/bin/bash',
@@ -116,7 +116,7 @@ const update_or_install_venti = async () => {
         // Kill running instances of venti
         const processes = await exec_async( `ps aux | grep "/usr/local/bin/venti " | wc -l | grep -Eo "\\d*"` )
         log( `Found ${ `${ processes }`.replace( /\n/, '' ) } venti related processed to kill` )
-        if( is_installed ) await exec_async( `${ venti } maintain stop` )
+        await exec_async( `${ venti } maintain stop` )
         await exec_async( `pkill -f "/usr/local/bin/venti.*"` ).catch( e => log( `Error killing existing venti processes, usually means no running processes` ) )
 
         // If installed, update
