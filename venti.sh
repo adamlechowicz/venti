@@ -115,7 +115,7 @@ action=$1
 setting=$2
 prev_region="DEF"
 threshold=1200
-refresh_interval=8
+refresh_interval=40 # how often to get new values for carbon intensity
 
 ## ###############
 ## Helpers
@@ -464,7 +464,7 @@ if [[ "$action" == "maintain_synchronous" ]]; then
 
 		fi
 
-		sleep 300
+		sleep 60
 
 		battery_percentage=$( get_battery_percentage )
 		((refresh++))

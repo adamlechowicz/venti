@@ -163,7 +163,7 @@ const get_battery_status = async () => {
 
     try {
         const message = await exec_async( `${ venti } status_csv` )
-        let [ percentage, remaining, charging, discharging, maintain_percentage, carbon_intensity ] = message.split( ',' )
+        let [ percentage, remaining, charging, discharging, maintain_percentage, carbon ] = message.split( ',' )
         maintain_percentage = maintain_percentage.trim()
         maintain_percentage = maintain_percentage.length ? maintain_percentage : undefined
         charging = charging == 'enabled'
@@ -171,6 +171,9 @@ const get_battery_status = async () => {
         remaining = remaining.match( /\d{1,2}:\d{1,2}/ ) ? remaining : 'unknown'
         
         let battery_state = `${ percentage }% (${ remaining } remaining)`
+        if(charging){
+            battery_state = `${ percentage }% (${ remaining } until fully charged)`
+        }
         if(remaining === 'unknown'){
             battery_state = `${ percentage }% (adapter attached)`
         }
@@ -178,13 +181,13 @@ const get_battery_status = async () => {
         if( discharging ) daemon_state += `forcing discharge to ${ maintain_percentage || 80 }%`
         else daemon_state += `SMC charging ${ charging ? 'enabled' : 'disabled' }`
 
-        carbon_intensity = carbon_intensity += "gCO2eq/kWh"
+        carbon_intensity = `${ carbon } gCO2eq/kWh`
 
         return [ battery_state, daemon_state, maintain_percentage, carbon_intensity ]
 
     } catch( e ) {
         log( `Error getting venti status: `, e )
-        alert( `Venti error: ${ e.message }` )
+        // alert( `Venti error: ${ e.message }` )
     }
 
 }
