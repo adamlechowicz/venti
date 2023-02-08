@@ -529,7 +529,7 @@ fi
 # Status logger
 if [[ "$action" == "status" ]]; then
 
-	log "Battery at $( get_battery_percentage  )% ($( get_remaining_time ) remaining), smc charging $( get_smc_charging_status )"
+	log "Battery at $( get_battery_percentage  )% ($( get_remaining_time ) remaining), SMC charging $( get_smc_charging_status )"
 	if test -f $pidfile; then
 		maintain_percentage=$( cat $maintain_percentage_tracker_file 2> /dev/null )
 		log "Your battery is currently being maintained at $maintain_percentage%"
@@ -541,7 +541,11 @@ fi
 # Status logger in csv format
 if [[ "$action" == "status_csv" ]]; then
 
-	echo "$( get_battery_percentage  ),$( get_remaining_time ),$( get_smc_charging_status ),$( get_smc_discharging_status ),$( get_maintain_percentage )"
+	location=$( get_location )
+	result=$( get_carbon_intensity $APITOKEN "$location" ) 
+	carbonArray=($result)
+
+	echo "$( get_battery_percentage  ),$( get_remaining_time ),$( get_smc_charging_status ),$( get_smc_discharging_status ),$( get_maintain_percentage ),${carbonArray[0]}"
 
 fi
 

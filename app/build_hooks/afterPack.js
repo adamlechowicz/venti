@@ -4,9 +4,9 @@ const log = ( ...messages ) => console.log( ...messages )
 exports.default = async function( context ) {
 
     const troublesome_files = [
-        `dist/mac-arm64/battery.app/Contents/Resources/app.asar.unpacked/node_modules/electron-sudo/LICENSE`,
-        `dist/mac-arm64/battery.app/Contents/Resources/app.asar.unpacked/node_modules/electron-sudo/dist/bin/applet.app/LICENSE`,
-        `dist/mac-arm64/battery.app/Contents/Resources/app.asar.unpacked/node_modules/electron-sudo/src/bin/applet.app/LICENSE`
+        `dist/mac-arm64/Venti.app/Contents/Resources/app.asar.unpacked/node_modules/electron-sudo/LICENSE`,
+        `dist/mac-arm64/Venti.app/Contents/Resources/app.asar.unpacked/node_modules/electron-sudo/dist/bin/applet.app/LICENSE`,
+        `dist/mac-arm64/Venti.app/Contents/Resources/app.asar.unpacked/node_modules/electron-sudo/src/bin/applet.app/LICENSE`
     ]
 
     try {

@@ -28,20 +28,19 @@
   "repository": "https://github.com/adamlechowicz/venti",
   "keywords": [
     "battery",
-    "m1",
+    "apple silicon",
     "mac",
     "carbon-aware"
   ],
   "author": "adamlechowicz",
   "license": "MIT",
   "devDependencies": {
-    "dotenv": "^16.0.2",
-    "electron": "^20.1.4",
-    "electron-builder": "^23.6.0",
+    "dotenv": "^16.0.3",
+    "electron": "^17.1.4",
+    "electron-builder": "^23.3.3",
     "electron-notarize": "^1.2.2"
   },
   "dependencies": {
-    "electron-osx-prompt": "^1.4.1",
     "sudo-prompt": "^9.2.1"
   }
 }

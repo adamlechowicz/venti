@@ -13,7 +13,7 @@ const generate_app_menu = async () => {
 
     try {
         // Get battery and daemon status
-        const [ battery_state, daemon_state, maintain_percentage=80 ] = await get_battery_status()
+        const [ battery_state, daemon_state, maintain_percentage=80, carbon_intensity ] = await get_battery_status()
 
         // Check if limiter is on
         const limiter_on = await is_limiter_enabled()
@@ -46,6 +46,10 @@ const generate_app_menu = async () => {
             },
             {
                 label: `Power: ${ daemon_state }`,
+                enabled: false
+            },
+            {
+                label: `Carbon Intensity: ${ carbon_intensity }`,
                 enabled: false
             },
             {
