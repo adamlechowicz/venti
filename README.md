@@ -5,7 +5,7 @@
 
 <img width="300px" align="right" src="./screenshots/tray.png"/> Venti is meant for MacBooks which are plugged into a power source most of the time.  It fulfills two design goals simultaneously: first, it keeps the battery charged to `80%`, which helps prolong the longevity of the battery.  Second, when the battery percentage does drop below `80%`, Venti uses carbon intensity data from [CO2signal](https://www.co2signal.com) to *defer* charging until grid electricity is sufficiently clean, reducing your carbon footprint.
 
-Venti is free, open-source, and heavily based on the existing [battery tool](https://github.com/actuallymentor/battery/) by Mentor Palokaj.
+Venti is free, open-source, and heavily based on an [existing tool](https://github.com/actuallymentor/battery/) by Mentor Palokaj.
 
 > Want to know if this tool does anything or is just a placebo? Read [this article](https://batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries). TLDR: keep your battery cool, keep it at 80% when plugged in, and discharge it as shallowly as feasible.
 
