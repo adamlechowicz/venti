@@ -78,9 +78,9 @@ Usage:
     to use fixed location: venti fix-location ES-CE
 
   venti set-api-key {APIKEY}
-    set your own (free!) API key, used to query for carbon intensity from CO2signal. 
-    there is a default key, but depending on how popular this tool becomes, it may hit the request limit.
-    you can get your own free key and never deal with these issues by visiting https://www.co2signal.com.
+    set your API key, which is used to query for carbon intensity from CO2signal.
+	if you have used the GUI for initial setup, you will have been prompted to set this up already.
+    you can get your own free key by visiting https://www.co2signal.com.
     eg: venti set-api-key 1xYYY1xXXX1XXXxXXYyYYxXXyXyyyXXX
 
   venti visudo
@@ -163,6 +163,9 @@ function get_last_carbon() {
 }
 
 function get_carbon_intensity() { # accepts auth token and location as necessary params
+	if [[ "$1" == "1xYYY1xXXX1XXXxXXYyYYxXXyXyyyXXX" ]]; then
+		log "🔑 Still using default API key.  Go to co2signal.com and use 'venti set-api-key {key}' to configure your own key."
+	fi
 	if [[ "$( test_internet )" == "online" ]]; then
 		electricity_map=`curl -s -H "auth-token: $1" "http://api.co2signal.com/v1/latest?$2"`
 		carbon=`echo "$electricity_map" | grep -o ',"carbonIntensity":[^,]*' | grep -o '[^:]*$'`
@@ -346,11 +349,11 @@ if [[ "$action" == "adapter" ]]; then
 	log "Setting $action to $setting."
 
 	# Disable running daemon
-	# venti maintain stop
-	location=$( get_location )
-	result=$( get_carbon_intensity $APITOKEN "$location" ) 
-	carbonArray=($result)
-	log "$result"
+	venti maintain stop
+	# location=$( get_location )
+	# result=$( get_carbon_intensity $APITOKEN "$location" ) 
+	# carbonArray=($result)
+	# log "$result"
 
 	# Set charging to on and off
 	if [[ "$setting" == "off" ]]; then
