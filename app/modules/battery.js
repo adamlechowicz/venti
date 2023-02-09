@@ -58,14 +58,16 @@ const set_api_key = async command => new Promise( async ( resolve, reject ) => {
         value: '1xYYY1xXXX1XXXxXXYyYYxXXyXyyyXXX',
         inputAttrs: { type: 'text', required: true },
         type: 'input',
-        alwaysOnTop: true 
+        alwaysOnTop: true,
+        buttonLabels: {'ok': "Submit", 'cancel': "Exit"},
+        height: 150
     }
     log( `Executing api-key prompt: ${ command }` )
     prompt(options)
     .then((r) => {
         if(r === null) {
             log('user cancelled');
-            return reject( 'user cancelled' )
+            app.exit()
         } else {
             log('api key', r);
             exec_async( `${ venti } set-api-key ${ r }` )
@@ -128,17 +130,21 @@ const update_or_install_venti = async () => {
             venti_installed,
             smc_installed,
             charging_in_visudo,
-            discharging_in_visudo
+            discharging_in_visudo,
+            api_key
         ] = await Promise.all( [
             exec_async( `${ path_fix } which venti` ).catch( () => false ),
             exec_async( `${ path_fix } which smc` ).catch( () => false ),
             exec_async( `${ path_fix } sudo -n /usr/local/bin/smc -k CH0C -r` ).catch( () => false ),
-            exec_async( `${ path_fix } sudo -n /usr/local/bin/smc -k CH0I -r` ).catch( () => false )
+            exec_async( `${ path_fix } sudo -n /usr/local/bin/smc -k CH0I -r` ).catch( () => false ),
+            exec_async( `${ path_fix } cat ~/.venti/venti.conf | grep -o "APITOKEN=1xY"`).catch( () => false)
         ] )
 
         const visudo_complete = charging_in_visudo && discharging_in_visudo
-        const is_installed = venti_installed && smc_installed
+        const is_installed = venti_installed && smc_installed 
+        const api_key_complete = !api_key
         log( 'Is installed? ', is_installed )
+        log( 'API key configed? ', api_key_complete )
 
         // Kill running instances of venti
         const processes = await exec_async( `ps aux | grep "/usr/local/bin/venti " | wc -l | grep -Eo "\\d*"` )
@@ -161,10 +167,25 @@ const update_or_install_venti = async () => {
             await alert( `Welcome to Venti. The app needs to install/update some components, so it will ask for your password. This should only be needed once.` )
             const result = await exec_sudo_async( `curl -s https://raw.githubusercontent.com/adamlechowicz/venti/main/setup.sh | bash -s -- $USER` )
             log( `Install result: `, result )
-            await alert( `Venti background components installed successfully. You can find the Venti icon in the top right of your menu bar.` )
             await alert( `Venti needs a (free) CO2signal API key to reliably fetch carbon intensity values. You can get one at https://www.co2signal.com.`)
-            await set_api_key(`api-key`)
-            await alert( `success!`)
+            const result2 = await set_api_key(`api-key`)
+            log( `API key result: `, result2 )
+            if (!result2){
+                app.exit()
+            }
+            await alert( `Venti background components installed successfully. The app will now restart. You can find the Venti icon in the top right of your menu bar.` )
+            app.relaunch()
+            app.exit()
+        }
+
+        // If api key not configured
+        if( !api_key_complete ) {
+            await alert( `Venti needs a (free) CO2signal API key to reliably fetch carbon intensity values. You can get one at https://www.co2signal.com.`)
+            const result2 = await set_api_key(`api-key`)
+            log( `API key result: `, result2 )
+            await alert( `API key set successfully. The app will now restart. You can find the Venti icon in the top right of your menu bar.` )
+            app.relaunch()
+            app.exit()
         }
 
 
@@ -217,7 +238,7 @@ const get_battery_status = async () => {
 
     } catch( e ) {
         log( `Error getting venti status: `, e )
-        // alert( `Venti error: ${ e.message }` )
+        alert( `Venti error: ${ e.message }` )
     }
 
 }
