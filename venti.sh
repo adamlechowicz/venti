@@ -200,15 +200,10 @@ function disable_discharging() {
 # but @joelucid uses CH0C https://github.com/davidwernhart/AlDente/issues/52#issuecomment-1019933570
 # so I'm using both since with only CH0B I noticed sometimes during sleep it does trigger charging
 function enable_charging() {
-	carbon_intensity=$( get_carbon_intensity )
-	if [[ "$carbon_intensity" -lt "$threshold" ]]; then
-		log "🔌🔋 Enabling battery charging"
-		sudo smc -k CH0B -w 00
-		sudo smc -k CH0C -w 00
-		disable_discharging
-	elif [[ "$carbon_intensity" -ge "$threshold" ]]; then
-		log "Carbon intensity too high!"
-	fi
+	log "🔌🔋 Enabling battery charging"
+	sudo smc -k CH0B -w 00
+	sudo smc -k CH0C -w 00
+	disable_discharging
 }
 
 function disable_charging() {

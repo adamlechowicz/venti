@@ -135,7 +135,7 @@ Usage:
 
 ## Why does this exist?
 
-I was using AlDente to preserve the longevity of my MacBook's battery, but the [Clean Energy Charging](https://support.apple.com/en-us/HT213323) feature available on iOS caught my eye.
+I was using AlDente to preserve the longevity of my MacBook's battery, and the [Clean Energy Charging](https://support.apple.com/en-us/HT213323) feature available on iOS caught my eye.
 
 I found the existing and open-source [battery utility](https://github.com/actuallymentor/battery), which provided all of the basic system interactions needed to implement "Clean Energy Charging" functionality for the Mac.  After implementing the CO2signal API and some other tweaks, I arrived here.
 
