@@ -467,9 +467,10 @@ if [[ "$action" == "maintain_synchronous" ]]; then
 			log "Charge above $setting"
 			disable_charging
 
-		elif [[ "$battery_percentage" -lt "$setting" && "${carbonArray[0]}" -gt "$threshold" && "$is_charging" == "disabled" ]]; then
+		elif [[ "$battery_percentage" -lt "$setting" && "${carbonArray[0]}" -gt "$threshold" ]]; then
 		
 			log "Charge below $setting, but carbon too high!"
+			disable_charging
 			sleep 1200 		# wait 20 min before checking again
 			((refresh=refresh_interval))
 			
