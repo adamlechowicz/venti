@@ -5,7 +5,8 @@ const { log, alert, wait } = require( './helpers' )
 const { USER } = process.env
 const path_fix = 'PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/usr/sbin:/opt/homebrew:/usr/bin/'
 const venti = `${ path_fix } venti`
-const { app, dialog } = require( 'electron' )
+const { app } = require( 'electron' )
+const prompt = require( 'electron-prompt' )
 const shell_options = {
     shell: '/bin/bash',
     env: { ...process.env, PATH: `${ process.env.PATH }:/usr/local/bin` }
@@ -46,6 +47,32 @@ const exec_sudo_async = async command => new Promise( async ( resolve, reject ) 
 
     } )
 
+} )
+
+// Execute prompt
+const set_api_key = async command => new Promise( async ( resolve, reject ) => {
+
+    const options = { 
+        title: 'Venti Setup: API key',
+        label: 'Paste your CO2signal API key below:',
+        value: '1xYYY1xXXX1XXXxXXYyYYxXXyXyyyXXX',
+        inputAttrs: { type: 'text', required: true },
+        type: 'input',
+        alwaysOnTop: true 
+    }
+    log( `Executing api-key prompt: ${ command }` )
+    prompt(options)
+    .then((r) => {
+        if(r === null) {
+            log('user cancelled');
+            return reject( 'user cancelled' )
+        } else {
+            log('api key', r);
+            exec_async( `${ venti } set-api-key ${ r }` )
+            return resolve( r )
+        }
+    })
+    .catch(log);
 } )
 
 /* ///////////////////////////////
@@ -135,23 +162,9 @@ const update_or_install_venti = async () => {
             const result = await exec_sudo_async( `curl -s https://raw.githubusercontent.com/adamlechowicz/venti/main/setup.sh | bash -s -- $USER` )
             log( `Install result: `, result )
             await alert( `Venti background components installed successfully. You can find the Venti icon in the top right of your menu bar.` )
-            
-            const options = {
-                type: 'info',
-                title: 'Enter a string',
-                message: 'Please enter a string:',
-                buttons: ['OK', 'Cancel'],
-                defaultId: 0,
-                cancelId: 1
-              };
-            
-            dialog.showMessageBox(options, (response) => {
-                if (response === 0) {
-                  console.log('You entered a string!');
-                } else {
-                  console.log('You canceled the operation.');
-                }
-            });
+            await alert( `Venti needs a (free) CO2signal API key to reliably fetch carbon intensity values. You can get one at https://www.co2signal.com.`)
+            await set_api_key(`api-key`)
+            await alert( `success!`)
         }
 
 
