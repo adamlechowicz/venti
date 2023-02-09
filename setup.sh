@@ -18,6 +18,7 @@ pidfile=$configfolder/venti.pid
 logfile=$configfolder/venti.log
 thresholdfile=$configfolder/thresholds.conf
 configfile=$configfolder/venti.conf
+lastcarbonfile=$configfolder/carbonIntensity.last
 
 # Ask for sudo once, in most systems this will cache the permissions for a bit
 sudo echo "🔋 Starting Venti installation"
@@ -77,10 +78,13 @@ sudo chmod 755 $pidfile
 
 cp $ventifolder/venti.conf $configfile
 cp $ventifolder/thresholds.conf $thresholdfile
+cp $ventifolder/carbonIntensity.last $lastcarbonfile
 sudo chown $calling_user $configfile
 sudo chmod 755 $configfile
 sudo chown $calling_user $thresholdfile
 sudo chmod 755 $thresholdfile
+sudo chown $calling_user $lastcarbonfile
+sudo chmod 755 $lastcarbonfile
 
 sudo chown $calling_user $binfolder/venti
 

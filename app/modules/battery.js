@@ -5,7 +5,7 @@ const { log, alert, wait } = require( './helpers' )
 const { USER } = process.env
 const path_fix = 'PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/usr/sbin:/opt/homebrew:/usr/bin/'
 const venti = `${ path_fix } venti`
-const { app } = require( 'electron' )
+const { app, dialog } = require( 'electron' )
 const shell_options = {
     shell: '/bin/bash',
     env: { ...process.env, PATH: `${ process.env.PATH }:/usr/local/bin` }
@@ -135,6 +135,23 @@ const update_or_install_venti = async () => {
             const result = await exec_sudo_async( `curl -s https://raw.githubusercontent.com/adamlechowicz/venti/main/setup.sh | bash -s -- $USER` )
             log( `Install result: `, result )
             await alert( `Venti background components installed successfully. You can find the Venti icon in the top right of your menu bar.` )
+            
+            const options = {
+                type: 'info',
+                title: 'Enter a string',
+                message: 'Please enter a string:',
+                buttons: ['OK', 'Cancel'],
+                defaultId: 0,
+                cancelId: 1
+              };
+            
+            dialog.showMessageBox(options, (response) => {
+                if (response === 0) {
+                  console.log('You entered a string!');
+                } else {
+                  console.log('You canceled the operation.');
+                }
+            });
         }
 
 

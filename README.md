@@ -76,61 +76,69 @@ After running `venti charging on` you will see it change to this:
 For help, run `venti help` or `venti` without parameters:
 
 ```
-Battery CLI utility v1.0.1
+Venti CLI v1.0
 
 Usage:
 
-  battery status
+  venti status
     output battery SMC status, % and time remaining
 
-  battery maintain LEVEL[1-100,stop]
+  venti logs LINES[integer, optional]
+    output logs of the venti CLI and GUI
+	eg: venti logs 100
+
+  venti maintain LEVEL[1-100,stop]
     reboot-persistent battery level maintenance: turn off charging above, and on below a certain value
-    eg: battery maintain 80
-    eg: battery maintain stop
+    eg: venti maintain 80
+    eg: venti maintain stop
 
-  battery charging SETTING[on/off]
+  venti charging SETTING[on/off]
     manually set the battery to (not) charge
-    eg: battery charging on
+    eg: venti charging on
 
-  battery adapter SETTING[on/off]
-    manually set the adapter to (not) charge even when plugged in
-    eg: battery adapter off
+  venti adapter SETTING[on/off]
+    manually set the supply of power from adapter (off means battery will drain even when plugged in)
+    eg: venti adapter off
 
-  battery charge LEVEL[1-100]
+  venti charge LEVEL[1-100]
     charge the battery to a certain percentage, and disable charging when that percentage is reached
-    eg: battery charge 90
+    eg: venti charge 90
 
-  battery discharge LEVEL[1-100]
+  venti discharge LEVEL[1-100]
     block power input from the adapter until battery falls to this level
-    eg: battery discharge 90
+    eg: venti discharge 90
 
-  battery visudo
+  venti fix-region {region/False}
+    manually fix the location queried for carbon intensity from Electricity Map.
+    see https://api.electricitymap.org/v3/zones for a full list of regions
+    to use dynamic location based on IP: venti fix-location False
+    to use fixed location: venti fix-location ES-CE
+
+  venti set-api-key {APIKEY}
+    set your own (free!) API key, used to query for carbon intensity from CO2signal. 
+    there is a default key, but depending on how popular this tool becomes, it may hit the request limit.
+    you can get your own free key and never deal with these issues by visiting https://www.co2signal.com.
+    eg: venti set-api-key 1xYYY1xXXX1XXXxXXYyYYxXXyXyyyXXX
+
+  venti visudo
     instructions on how to make which utility exempt from sudo, highly recommended
 
-  battery update
-    update the battery utility to the latest version
+  venti update
+    update the venti utility to the latest version
 
-  battery reinstall
-    reinstall the battery utility to the latest version (reruns the installation script)
+  venti reinstall
+    reinstall the venti utility to the latest version (reruns the installation script)
 
-  battery uninstall
-    enable charging, remove the smc tool, and the battery script
+  venti uninstall
+    enable charging, remove the smc tool, and the venti script
 ```
 
 ## Why does this exist?
 
-I was looking at the Al Dente software package for battery limiting, but I found the [license too limiting](https://github.com/davidwernhart/AlDente/discussions/558) for a poweruser like myself.
+I was using AlDente to preserve the longevity of my MacBook's battery, but the [Clean Energy Charging](https://support.apple.com/en-us/HT213323) feature available on iOS caught my eye.
 
-I would actually have preferred using Al Dente, but decided to create a command-line utility to replace it as a side-project on holiday. A colleague mentioned they would like a GUI, so I spend a few evenings setting up an Electron app. And voila, here we are.
+I found the existing and open-source [battery utility](https://github.com/actuallymentor/battery), which provided all of the basic system interactions needed to implement "Clean Energy Charging" functionality for the Mac.  After implementing the CO2signal API and some other tweaks, I arrived here.
 
 ## "It's not working"
 
-If you used one of the earlier versions of the `battery` utility, you may run into [path/permission issues](https://github.com/actuallymentor/battery/issues/8). This is not your fault but mine. To fix it:
-
-```
-sudo rm -rf ~/.battery
-binfolder=/usr/local/bin
-sudo rm -v "$binfolder/smc" "$binfolder/battery"
-```
-
-Then reopen the app and things should work. If not, [open an issue](https://github.com/actuallymentor/battery/issues/new) and I'll try to help you fix it.
+Please [open an issue](https://github.com/adamlechowicz/venti/issues/new) and I'll try to address it whenever I have some time!

@@ -14,6 +14,7 @@ logfile=$configfolder/venti.log
 configfile=$configfolder/venti.conf
 thresholdfile=$configfolder/thresholds.conf
 maintain_percentage_tracker_file=$configfolder/maintain.percentage
+carbon_intensity_tracker_file=$configfolder/carbonIntensity.last
 daemon_path=$HOME/Library/LaunchAgents/venti.plist
 
 ## ###############
@@ -38,7 +39,7 @@ while read LINE; do declare "$LINE"; done < $configfile
 
 # CLI help message
 helpmessage="
-Venti CLI utility v1.0
+Venti CLI v1.0
 
 Usage:
 
@@ -59,7 +60,7 @@ Usage:
     eg: venti charging on
 
   venti adapter SETTING[on/off]
-    manually set the adapter to (not) charge even when plugged in
+    manually set the adapter to supply power (off means battery will drain even when plugged in)
     eg: venti adapter off
 
   venti charge LEVEL[1-100]
@@ -156,6 +157,11 @@ function get_threshold() { # accepts region as necessary params
 	echo "${!temp}"
 }
 
+function get_last_carbon() {
+	last_carbon=$( cat $carbon_intensity_tracker_file 2> /dev/null )
+	echo "$last_carbon"
+}
+
 function get_carbon_intensity() { # accepts auth token and location as necessary params
 	if [[ "$( test_internet )" == "online" ]]; then
 		electricity_map=`curl -s -H "auth-token: $1" "http://api.co2signal.com/v1/latest?$2"`
@@ -163,9 +169,18 @@ function get_carbon_intensity() { # accepts auth token and location as necessary
 		result=`echo "$electricity_map" | grep -o ',"countryCode":[^,]*' | grep -o '[^:]*$'`
 		region="${result//-/}"
 		region="${region//\"/}"
-		echo "$carbon $region"
+
+		# if result is nothing, load from file
+		if [[ "$carbon" == "" ]]; then
+			echo "$( get_last_carbon )"
+		else
+			# Store this carbon intensity for later use if necessary
+			echo "$carbon $region" > $carbon_intensity_tracker_file
+
+			echo "$carbon $region"
+		fi
 	else
-		echo "0 DEF"
+		echo "0 DEF" # if we're offline, allow charging
 	fi	
 }
 
@@ -336,12 +351,16 @@ if [[ "$action" == "adapter" ]]; then
 	log "Setting $action to $setting."
 
 	# Disable running daemon
-	venti maintain stop
+	# venti maintain stop
+	location=$( get_location )
+	result=$( get_carbon_intensity $APITOKEN "$location" ) 
+	carbonArray=($result)
+	log "$result"
 
 	# Set charging to on and off
-	if [[ "$setting" == "on" ]]; then
+	if [[ "$setting" == "off" ]]; then
 		enable_discharging
-	elif [[ "$setting" == "off" ]]; then
+	elif [[ "$setting" == "on" ]]; then
 		disable_discharging
 	fi
 
@@ -528,8 +547,10 @@ fi
 
 # Status logger
 if [[ "$action" == "status" ]]; then
+	result=$( get_last_carbon ) 
+	carbonArray=($result)
 
-	log "Battery at $( get_battery_percentage  )% ($( get_remaining_time ) remaining), SMC charging $( get_smc_charging_status )"
+	log "Battery at $( get_battery_percentage  )% ($( get_remaining_time ) remaining), SMC charging $( get_smc_charging_status ), Carbon Intensity ${carbonArray[0]} gCO2eq/kWh"
 	if test -f $pidfile; then
 		maintain_percentage=$( cat $maintain_percentage_tracker_file 2> /dev/null )
 		log "Your battery is currently being maintained at $maintain_percentage%"
@@ -540,9 +561,7 @@ fi
 
 # Status logger in csv format
 if [[ "$action" == "status_csv" ]]; then
-
-	location=$( get_location )
-	result=$( get_carbon_intensity $APITOKEN "$location" ) 
+	result=$( get_last_carbon ) 
 	carbonArray=($result)
 
 	echo "$( get_battery_percentage  ),$( get_remaining_time ),$( get_smc_charging_status ),$( get_smc_discharging_status ),$( get_maintain_percentage ),${carbonArray[0]}"
