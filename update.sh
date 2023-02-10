@@ -4,6 +4,7 @@
 PATH="$PATH:/usr/sbin"
 
 # Set environment variables
+calling_user=${1:-"$USER"}
 tempfolder=~/.venti-tmp
 binfolder=/usr/local/bin
 ventifolder="$tempfolder/venti"
