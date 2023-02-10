@@ -304,7 +304,23 @@ if [[ "$action" == "update" ]]; then
 		echo "Press any key to continue"
 		read
 	fi
+	
+	# Update configuration
+	tempfolder=~/.venti-tmp
+	ventifolder="$tempfolder/venti"
+	
+	echo -e "🔋 Starting Venti update\n"
+	
+	echo "[ 1/4 ] Cloning repository"
+	rm -rf $ventifolder
+	git clone --depth 1 https://github.com/adamlechowicz/venti.git $ventifolder &> /dev/null
+
+	echo "[ 2/4 ] Updating configuration..."
+	cp $ventifolder/thresholds.conf $thresholdfile
+	chown $USER $thresholdfile
+	
 	curl -sS https://raw.githubusercontent.com/adamlechowicz/venti/main/update.sh | bash
+	echo -e "\n🎉 Venti updated.\n"
 	exit 0
 fi
 
