@@ -97,7 +97,7 @@ Usage:
     eg: venti charging on
 
   venti adapter SETTING[on/off]
-    manually set the supply of power from adapter (off means battery will drain even when plugged in)
+    manually set the adapter to supply power (off means battery will drain even when plugged in)
     eg: venti adapter off
 
   venti charge LEVEL[1-100]
@@ -115,9 +115,9 @@ Usage:
     to use fixed location: venti fix-location ES-CE
 
   venti set-api-key {APIKEY}
-    set your own (free!) API key, used to query for carbon intensity from CO2signal. 
-    there is a default key, but depending on how popular this tool becomes, it may hit the request limit.
-    you can get your own free key and never deal with these issues by visiting https://www.co2signal.com.
+    set your API key, which is used to query for carbon intensity from CO2signal.
+	if you have used the GUI for initial setup, you will have been prompted to set this up already.
+    you can get your own free key by visiting https://www.co2signal.com.
     eg: venti set-api-key 1xYYY1xXXX1XXXxXXYyYYxXXyXyyyXXX
 
   venti visudo

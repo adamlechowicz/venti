@@ -60,7 +60,7 @@ const set_api_key = async command => new Promise( async ( resolve, reject ) => {
         type: 'input',
         alwaysOnTop: true,
         buttonLabels: {'ok': "Submit", 'cancel': "Exit"},
-        height: 170
+        height: 190
     }
     log( `Executing api-key prompt: ${ command }` )
     prompt(options)

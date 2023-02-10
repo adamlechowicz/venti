@@ -116,7 +116,7 @@ action=$1
 setting=$2
 prev_region="DEF"
 threshold=1200
-refresh_interval=40 # how often to get new values for carbon intensity
+refresh_interval=20 # how often to get new values for carbon intensity
 
 ## ###############
 ## Helpers
