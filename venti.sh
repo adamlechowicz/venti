@@ -117,6 +117,7 @@ setting=$2
 prev_region="DEF"
 threshold=1200
 refresh_interval=20 # how often to get new values for carbon intensity
+force_interval=28 # after how many 20 min intervals should we force charging despite carbon
 
 ## ###############
 ## Helpers
@@ -469,6 +470,7 @@ if [[ "$action" == "maintain_synchronous" ]]; then
 	fi
 
 	refresh=0
+	force=0
 
 	log "Charging to and maintaining at $setting% from $battery_percentage%, current carbon intensity=${carbonArray[0]}"
 
@@ -482,6 +484,14 @@ if [[ "$action" == "maintain_synchronous" ]]; then
 
 			log "Charge above $setting"
 			disable_charging
+			((force=0))
+
+		elif [[ "$battery_percentage" -lt "$setting" && "${carbonArray[0]}" -gt "$threshold" && $force -ge $force_interval ]]; then
+		
+			log "Charging despite high carbon intensity!"
+			enable_charging
+			sleep 1200 		# wait 20 min before checking again
+			((refresh=refresh_interval))
 
 		elif [[ "$battery_percentage" -lt "$setting" && "${carbonArray[0]}" -gt "$threshold" ]]; then
 		
@@ -489,12 +499,13 @@ if [[ "$action" == "maintain_synchronous" ]]; then
 			disable_charging
 			sleep 1200 		# wait 20 min before checking again
 			((refresh=refresh_interval))
+			((force++))		# increment force (we force charging after 10 hours of high carbon intensity)
 			
-
 		elif [[ "$battery_percentage" -lt "$setting" && "${carbonArray[0]}" -le "$threshold" && "$is_charging" == "disabled" ]]; then
 
 			log "Charge below $setting"
 			enable_charging
+			((force=0))
 
 		fi
 
@@ -516,7 +527,7 @@ if [[ "$action" == "maintain_synchronous" ]]; then
 
 			((refresh=0))
 		fi
-
+		
 	done
 
 	exit 0
