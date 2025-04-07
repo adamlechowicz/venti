@@ -1,7 +1,7 @@
 {
   "name": "Venti",
-  "version": "1.0.0",
-  "description": "A carbon-aware battery charge limiter for M1/2 Mac devices",
+  "version": "1.1.0",
+  "description": "A carbon-aware battery charge limiter for Apple Silicon MacBooks",
   "main": "main.js",
   "build": {
     "appId": "com.adamlechowicz.venti",
@@ -41,7 +41,5 @@
     "electron-notarize": "^1.2.2"
   },
   "dependencies": {
-    "sudo-prompt": "^9.2.1",
-    "electron-prompt": "^1.7.0"
   }
 }

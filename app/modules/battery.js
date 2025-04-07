@@ -1,12 +1,11 @@
 // Command line interactors
 const { exec } = require('node:child_process')
-const sudo = require( 'sudo-prompt' )
 const { log, alert, wait } = require( './helpers' )
 const { USER } = process.env
+const path = require('path')
 const path_fix = 'PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/usr/sbin:/opt/homebrew:/usr/bin/'
 const venti = `${ path_fix } venti`
 const { app } = require( 'electron' )
-const prompt = require( 'electron-prompt' )
 const shell_options = {
     shell: '/bin/bash',
     env: { ...process.env, PATH: `${ process.env.PATH }:/usr/local/bin` }
@@ -34,48 +33,73 @@ const exec_async = ( command, timeout_in_ms=2000, throw_on_timeout=false ) => Pr
     } )
 ] )
 
-// Execute with sudo
-const exec_sudo_async = async command => new Promise( async ( resolve, reject ) => {
-
-    const options = { name: 'Venti', ...shell_options }
-    log( `Sudo executing command: ${ command }` )
-    sudo.exec( command, options, ( error, stdout, stderr ) => {
-
-        if( error ) return reject( !!error )
-        if( stderr ) return reject( !!stderr )
-        if( stdout ) return resolve( !!stdout )
-
-    } )
-
-} )
-
-// Execute prompt
-const set_api_key = async command => new Promise( async ( resolve, reject ) => {
-
-    const options = { 
-        title: 'Venti Setup: API key',
-        label: 'Paste your CO2signal API key below:',
-        value: '1xYYY1xXXX1XXXxXXYyYYxXXyXyyyXXX',
-        inputAttrs: { type: 'text', required: true },
-        type: 'input',
-        alwaysOnTop: true,
-        buttonLabels: {'ok': "Submit", 'cancel': "Exit"},
-        height: 190
+// Execute with sudo using direct AppleScript (more reliable)
+const exec_sudo_async = async command => new Promise(async (resolve, reject) => {
+    try {
+        log(`Sudo executing command via AppleScript: ${command}`)
+        
+        // Escape double quotes in the command
+        const escapedCommand = command.replace(/"/g, '\\"')
+        
+        // Create AppleScript to request admin privileges
+        const appleScript = `do shell script "${escapedCommand}" with administrator privileges`
+        
+        exec(`osascript -e '${appleScript}'`, shell_options, (error, stdout, stderr) => {
+            if (error) {
+                if (error.message && error.message.includes('User canceled')) {
+                    return reject(new Error('Authentication canceled by user'))
+                }
+                return reject(error)
+            }
+            if (stderr) return reject(stderr)
+            return resolve(stdout || true)
+        })
+    } catch (err) {
+        reject(err)
     }
-    log( `Executing api-key prompt: ${ command }` )
-    prompt(options)
-    .then((r) => {
-        if(r === null) {
-            log('user cancelled');
-            app.exit()
-        } else {
-            log('api key', r);
-            exec_async( `${ venti } set-api-key ${ r }` )
-            return resolve( r )
-        }
-    })
-    .catch(log);
-} )
+})
+
+// Execute API key prompt with native macOS dialog (without System Events permissions)
+const set_api_key = async command => new Promise((resolve, reject) => {
+    try {
+        log(`Executing API key prompt via AppleScript: ${command}`)
+        
+        // Create AppleScript for a native macOS dialog without System Events
+        const appleScript = `
+            display dialog "Paste your CO2signal API key below:" default answer "1xYYY1xXXX1XXXxXXYyYYxXXyXyyyXXX" with title "Venti Setup" buttons {"Exit", "Submit"} default button "Submit"
+            set theResult to the result
+            if button returned of theResult is "Submit" then
+                set apiKey to text returned of theResult
+                return apiKey
+            else
+                return "CANCELED"
+            end if
+        `
+        
+        exec(`osascript -e '${appleScript}'`, shell_options, (error, stdout, stderr) => {
+            if (error) {
+                log('API key prompt error:', error)
+                return reject(error)
+            }
+            
+            // Clean up the returned key
+            const apiKey = stdout.trim()
+            
+            if (apiKey === "CANCELED") {
+                log('User cancelled API key input')
+                app.exit()
+                return resolve(null)
+            }
+            
+            log('API key:', apiKey)
+            exec_async(`${venti} set-api-key ${apiKey}`)
+                .then(() => resolve(apiKey))
+                .catch(err => reject(err))
+        })
+    } catch (err) {
+        reject(err)
+    }
+})
 
 /* ///////////////////////////////
 // Battery cli functions
@@ -119,9 +143,9 @@ const update_or_install_venti = async () => {
         // Check if xcode build tools are installed
         const xcode_installed = await exec_async( `${ path_fix } which git` ).catch( () => false )
         if( !xcode_installed ) {
-            alert( `Venti needs Xcode to be installed, please accept the terms and conditions for installation` )
+            alert( `Venti needs Xcode developer tools to be installed, please accept the terms and conditions for installation` )
             await exec_async( `${ path_fix } xcode-select --install` )
-            alert( `Please restart Venti after Xcode finished installing` )
+            alert( `Please restart Venti after Xcode developer tools finish installing` )
             app.exit()
         }
 
@@ -165,14 +189,14 @@ const update_or_install_venti = async () => {
             log( `Installing venti for ${ USER }...` )
             if( !online ) return alert( `Venti needs an internet connection to download the latest version, please connect to the internet and open the app again.` )
             await alert( `Welcome to Venti. The app needs to install/update some components, so it will ask for your password. This should only be needed once.` )
-            const result = await exec_sudo_async( `curl -s https://raw.githubusercontent.com/adamlechowicz/venti/main/setup.sh | bash -s -- $USER` )
+            const result = await exec_sudo_async( `curl -s https://raw.githubusercontent.com/adamlechowicz/venti/main/setup.sh | zsh -s -- $USER` )
             log( `Install result: `, result )
-            await alert( `Venti needs a (free) CO2signal API key to reliably fetch carbon intensity values. You can get one at https://www.co2signal.com.`)
-            const result2 = await set_api_key(`api-key`)
-            log( `API key result: `, result2 )
-            if (!result2){
-                app.exit()
-            }
+            // await alert( `Venti needs a (free) CO2signal API key to reliably fetch carbon intensity values. You can get one at https://www.co2signal.com.`)
+            // const result2 = await set_api_key(`api-key`)
+            // log( `API key result: `, result2 )
+            // if (!result2){
+            //     app.exit()
+            // }
             await alert( `Venti background components installed successfully. The app will now restart. You can find the Venti icon in the top right of your menu bar.` )
             app.relaunch()
             app.exit()
