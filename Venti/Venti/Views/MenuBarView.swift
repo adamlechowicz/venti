@@ -64,7 +64,7 @@ struct MenuBarView: View {
                 onOpenSettings()
             }
 
-            menuButton("Quit", systemImage: "xmark.circle") {
+            menuButton("Quit", systemImage: "xmark.rectangle") {
                 onQuit()
             }
         }
