@@ -1,3 +1,5 @@
 *.app
 *.psd
 .DS_Store
+CLAUDE.md
+.claude

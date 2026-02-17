@@ -1,0 +1,394 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		667E61782F3C2578006D396E /* VentiAppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 667E61772F3C2578006D396E /* VentiAppIcon.icon */; };
+		A10001 /* VentiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001 /* VentiApp.swift */; };
+		A10002 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002 /* AppState.swift */; };
+		A10003 /* SMCCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003 /* SMCCapabilities.swift */; };
+		A10004 /* CarbonReading.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004 /* CarbonReading.swift */; };
+		A10005 /* SMCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10005 /* SMCService.swift */; };
+		A10006 /* BatteryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10006 /* BatteryService.swift */; };
+		A10007 /* CarbonService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10007 /* CarbonService.swift */; };
+		A10008 /* ThresholdService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008 /* ThresholdService.swift */; };
+		A10009 /* SetupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10009 /* SetupService.swift */; };
+		A10010 /* PrivilegedHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010 /* PrivilegedHelper.swift */; };
+		A10011 /* MaintainLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10011 /* MaintainLoop.swift */; };
+		A10012 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10012 /* Constants.swift */; };
+		A10013 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10013 /* MenuBarView.swift */; };
+		A10014 /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10014 /* SetupView.swift */; };
+		A10015 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10015 /* SettingsView.swift */; };
+		A10016 /* ProcessRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10016 /* ProcessRunner.swift */; };
+		A10017 /* Logger+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10017 /* Logger+Ext.swift */; };
+		A10018 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10018 /* Assets.xcassets */; };
+		A10019 /* Thresholds.json in Resources */ = {isa = PBXBuildFile; fileRef = B10019 /* Thresholds.json */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		667E61772F3C2578006D396E /* VentiAppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = VentiAppIcon.icon; sourceTree = "<group>"; };
+		B10001 /* VentiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VentiApp.swift; sourceTree = "<group>"; };
+		B10002 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		B10003 /* SMCCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMCCapabilities.swift; sourceTree = "<group>"; };
+		B10004 /* CarbonReading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarbonReading.swift; sourceTree = "<group>"; };
+		B10005 /* SMCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMCService.swift; sourceTree = "<group>"; };
+		B10006 /* BatteryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryService.swift; sourceTree = "<group>"; };
+		B10007 /* CarbonService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarbonService.swift; sourceTree = "<group>"; };
+		B10008 /* ThresholdService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThresholdService.swift; sourceTree = "<group>"; };
+		B10009 /* SetupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupService.swift; sourceTree = "<group>"; };
+		B10010 /* PrivilegedHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivilegedHelper.swift; sourceTree = "<group>"; };
+		B10011 /* MaintainLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaintainLoop.swift; sourceTree = "<group>"; };
+		B10012 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		B10013 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		B10014 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
+		B10015 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B10016 /* ProcessRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessRunner.swift; sourceTree = "<group>"; };
+		B10017 /* Logger+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Logger+Ext.swift"; sourceTree = "<group>"; };
+		B10018 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10019 /* Thresholds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Thresholds.json; sourceTree = "<group>"; };
+		B10020 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B10021 /* Venti.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Venti.entitlements; sourceTree = "<group>"; };
+		C10001 /* Venti.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Venti.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D10001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E10001 = {
+			isa = PBXGroup;
+			children = (
+				E10002 /* Venti */,
+				E10009 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E10002 /* Venti */ = {
+			isa = PBXGroup;
+			children = (
+				667E61772F3C2578006D396E /* VentiAppIcon.icon */,
+				B10001 /* VentiApp.swift */,
+				B10020 /* Info.plist */,
+				B10021 /* Venti.entitlements */,
+				B10018 /* Assets.xcassets */,
+				E10003 /* Models */,
+				E10004 /* Services */,
+				E10005 /* Core */,
+				E10006 /* Views */,
+				E10007 /* Utilities */,
+				E10008 /* Resources */,
+			);
+			path = Venti;
+			sourceTree = "<group>";
+		};
+		E10003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B10002 /* AppState.swift */,
+				B10003 /* SMCCapabilities.swift */,
+				B10004 /* CarbonReading.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E10004 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B10005 /* SMCService.swift */,
+				B10006 /* BatteryService.swift */,
+				B10007 /* CarbonService.swift */,
+				B10008 /* ThresholdService.swift */,
+				B10009 /* SetupService.swift */,
+				B10010 /* PrivilegedHelper.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		E10005 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				B10011 /* MaintainLoop.swift */,
+				B10012 /* Constants.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		E10006 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B10013 /* MenuBarView.swift */,
+				B10014 /* SetupView.swift */,
+				B10015 /* SettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E10007 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B10016 /* ProcessRunner.swift */,
+				B10017 /* Logger+Ext.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		E10008 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B10019 /* Thresholds.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		E10009 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C10001 /* Venti.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F10001 /* Venti */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = G10003 /* Build configuration list for PBXNativeTarget "Venti" */;
+			buildPhases = (
+				F10002 /* Sources */,
+				D10001 /* Frameworks */,
+				F10003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Venti;
+			productName = Venti;
+			productReference = C10001 /* Venti.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		H10001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					F10001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = G10001 /* Build configuration list for PBXProject "Venti" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E10001;
+			productRefGroup = E10009 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F10001 /* Venti */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F10003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				667E61782F3C2578006D396E /* VentiAppIcon.icon in Resources */,
+				A10018 /* Assets.xcassets in Resources */,
+				A10019 /* Thresholds.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F10002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001 /* VentiApp.swift in Sources */,
+				A10002 /* AppState.swift in Sources */,
+				A10003 /* SMCCapabilities.swift in Sources */,
+				A10004 /* CarbonReading.swift in Sources */,
+				A10005 /* SMCService.swift in Sources */,
+				A10006 /* BatteryService.swift in Sources */,
+				A10007 /* CarbonService.swift in Sources */,
+				A10008 /* ThresholdService.swift in Sources */,
+				A10009 /* SetupService.swift in Sources */,
+				A10010 /* PrivilegedHelper.swift in Sources */,
+				A10011 /* MaintainLoop.swift in Sources */,
+				A10012 /* Constants.swift in Sources */,
+				A10013 /* MenuBarView.swift in Sources */,
+				A10014 /* SetupView.swift in Sources */,
+				A10015 /* SettingsView.swift in Sources */,
+				A10016 /* ProcessRunner.swift in Sources */,
+				A10017 /* Logger+Ext.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		G10004 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		G10005 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		G10006 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_APPICON_NAME = VentiAppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = Venti/Venti.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FSMP3T4UP6;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Venti/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Venti;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Adam Lechowicz. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 2.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adamlechowicz.venti;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		G10007 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_APPICON_NAME = VentiAppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = Venti/Venti.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FSMP3T4UP6;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Venti/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Venti;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Adam Lechowicz. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 2.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adamlechowicz.venti;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		G10001 /* Build configuration list for PBXProject "Venti" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10004 /* Debug */,
+				G10005 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		G10003 /* Build configuration list for PBXNativeTarget "Venti" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10006 /* Debug */,
+				G10007 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = H10001 /* Project object */;
+}
