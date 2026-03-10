@@ -113,13 +113,18 @@ enum SMCService {
         do {
             if capabilities.useTahoeCharging {
                 let result = try await ProcessRunner.runSMC(key: "CHTE")
-                // CHTE returns "00000000" when charging enabled, "01000000" when disabled
-                return result.stdout.contains("00000000") || (!result.stdout.contains("01000000") && result.stdout.contains("00"))
+                // CHTE: first byte 00 = charging enabled, 01 = disabled.
+                // smc outputs space-separated bytes e.g. "bytes 01 00 00 00",
+                // so check for the disabled pattern rather than the enabled one.
+                let out = result.stdout
+                let disabled = out.contains("01 00 00 00") || out.contains("01000000")
+                return !disabled
             } else if capabilities.useLegacyCharging {
                 let result = try await ProcessRunner.runSMC(key: "CH0B")
-                // Parse hex value from output: "  CH0B  [ui8 ]  (bytes 00)"
+                // CH0B: "bytes 00" = charging enabled, "bytes 02" = disabled
                 let output = result.stdout
-                return output.contains("bytes 00") || output.hasSuffix("00)")
+                let disabled = output.contains("bytes 02") || output.hasSuffix("02)")
+                return !disabled
             }
         } catch {
             logger.error("Failed to read charging status: \(error.localizedDescription)")

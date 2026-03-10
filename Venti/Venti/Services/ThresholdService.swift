@@ -17,10 +17,9 @@ enum ThresholdService {
         logger.info("Loaded \(dict.count) carbon intensity thresholds")
     }
 
-    /// Look up threshold for a region code. Strips hyphens to match key format.
+    /// Look up threshold for a region code.
     static func threshold(for region: String) -> Int {
-        let key = region.replacingOccurrences(of: "-", with: "")
-        if let value = thresholds[key] {
+        if let value = thresholds[region] {
             return value
         }
         logger.debug("No threshold for region '\(region)', using default \(Constants.defaultThreshold)")

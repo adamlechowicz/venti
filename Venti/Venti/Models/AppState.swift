@@ -48,13 +48,17 @@ final class AppState {
 
     // MARK: - Computed display strings
     var batteryStatusText: String {
+        let noEstimate = timeRemaining == "unknown" || timeRemaining == "(no estimate)"
         if isCharging {
-            return "\(batteryPercentage)% (\(timeRemaining) until fully charged)"
+            if noEstimate {
+                return "\(batteryPercentage)% (charging)"
+            }
+            return "\(batteryPercentage)% (\(timeRemaining) until full)"
         }
-        if timeRemaining == "unknown" || timeRemaining == "(no estimate)" {
-            return "\(batteryPercentage)% (adapter attached)"
+        if noEstimate {
+            return "\(batteryPercentage)%"
         }
-        return "\(batteryPercentage)% (\(timeRemaining) remaining)"
+        return "\(batteryPercentage)% (\(timeRemaining) until empty)"
     }
 
     var chargingStatusText: String {

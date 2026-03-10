@@ -64,9 +64,9 @@ final class MaintainLoop {
             let battery = await BatteryService.getStatus()
             state.batteryPercentage = battery.percentage
             state.timeRemaining = battery.timeRemaining
+            state.isCharging = battery.isCharging  // physical state for display
 
-            let isCharging = await SMCService.isChargingEnabled(capabilities: caps)
-            state.isCharging = isCharging
+            let isCharging = await SMCService.isChargingEnabled(capabilities: caps)  // SMC state for control logic
 
             let percentage = battery.percentage
             let carbonIntensity = state.carbonIntensity
@@ -85,18 +85,14 @@ final class MaintainLoop {
                 logger.info("Charging despite high carbon intensity (forced after \(forceCounter) intervals)")
                 await SMCService.enableCharging(capabilities: caps)
                 state.isCharging = true
-
-                try? await Task.sleep(for: .seconds(Constants.forceSleepDuration))
-                refreshCounter = Constants.carbonRefreshIterations // trigger refresh
+                refreshCounter = Constants.carbonRefreshIterations // trigger carbon refresh next iteration
 
             } else if percentage < target && carbonIntensity > threshold {
                 // State 3: Below target, high carbon → wait
                 logger.info("Charge below \(target)%, but carbon too high (\(carbonIntensity) > \(threshold))")
                 await SMCService.disableCharging(capabilities: caps)
                 state.isCharging = false
-
-                try? await Task.sleep(for: .seconds(Constants.forceSleepDuration))
-                refreshCounter = Constants.carbonRefreshIterations // trigger refresh
+                refreshCounter = Constants.carbonRefreshIterations // trigger carbon refresh next iteration
                 forceCounter += 1
 
             } else if percentage < target && carbonIntensity <= threshold && !isCharging {
